@@ -1,0 +1,5 @@
+metric,resnet18,densenet121,hybrid,simple_cnn
+accuracy,0.95,0.92,0.93,0.63
+precision,0.95,0.91,0.93,0.63
+recall,0.95,0.92,0.93,0.63
+f1_score,0.95,0.91,0.93,0.62

@@ -1,0 +1,24 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Data and checkpoints (download locally)
+code/data/
+code/scl_metadata/
+code/torch_saved/
+*.pth
+*.tch
+training_history.json
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
