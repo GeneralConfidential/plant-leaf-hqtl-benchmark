@@ -1,36 +1,30 @@
 # plant-leaf-hqtl-benchmark
 
-Public reproduction artifacts for *Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification* (Gautam & B, VIT-AP).
+Code and experiment outputs for our work on hybrid quantum-classical transfer learning for plant leaf classification (SDP, VIT-AP).
 
-This repository contains **code, figures, and experiment protocols** reported in the paper. The manuscript itself is not published here.
+The write-up itself lives elsewhere. This repo is only for rerunning the hybrid model and checking the reported numbers.
 
-## Contents
+## What's in the repo
 
-```
-├── code/               # Training notebook + dependencies
-├── figures/            # Paper figures (depth ablation, sample predictions)
-├── results/tables/     # Validation metrics (CSV)
-├── REPRODUCTION.md     # How to rerun experiments
-└── LICENSE
-```
+- `code/demo_hybrid.ipynb` — ResNet18 + PennyLane VQC head, training and eval
+- `code/requirements.txt` — PyTorch, PennyLane, etc.
+- `figures/` — depth ablation plot and sample predictions
+- `results/tables/` — validation metrics (CSV, one file per experiment)
+- `REPRODUCTION.md` — splits, hyperparameters, dataset layout
 
-## Quick start
+## Run it
 
 ```bash
 git clone https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark.git
 cd plant-leaf-hqtl-benchmark/code
 python -m venv .venv
-# Windows: .venv\Scripts\activate
-# Linux/macOS: source .venv/bin/activate
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # Linux/macOS
 pip install -r requirements.txt
 jupyter notebook demo_hybrid.ipynb
 ```
 
-Download [PlantVillage](https://www.kaggle.com/datasets/abdallahalidev/plantvillage-dataset) images and place them under `code/data/<class_name>/`. See `REPRODUCTION.md` for splits and hyperparameters.
-
-## Results
-
-Validation metrics shipped with this release are in `results/tables/`. Figures are in `figures/`.
+Grab leaf images from [PlantVillage](https://www.kaggle.com/datasets/abdallahalidev/plantvillage-dataset) and put them under `code/data/<class_name>/`. The notebook builds the train/val split on first run. Details in `REPRODUCTION.md`.
 
 ## Citation
 
@@ -44,10 +38,4 @@ Validation metrics shipped with this release are in `results/tables/`. Figures a
 }
 ```
 
-## Authors
-
-Raag Gautam, Shreyas M B — School of Computer Science and Engineering, VIT-AP, Amaravati, India
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+Raag Gautam, Shreyas M B — VIT-AP. MIT license (see `LICENSE`).

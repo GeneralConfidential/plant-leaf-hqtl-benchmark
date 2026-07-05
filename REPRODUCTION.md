@@ -1,24 +1,22 @@
-# Reproduction Guide
+# Reproduction notes
 
-How to rerun the hybrid quantum-classical transfer learning experiments described in the paper.
+## Model
 
-## Model (hybrid)
+Frozen ResNet18 (ImageNet) + dressed VQC head in PennyLane:
 
-- **Backbone:** ResNet18 (ImageNet, frozen)
-- **Head:** dressed VQC — `Linear(512→n_qubits)` → tanh → π/2 → PennyLane circuit → `Linear(n_qubits→n_classes)`
-- **Defaults:** 4 qubits, depth 4, Adam lr=0.0004, batch 16, 10 epochs
+`Linear(512→n_qubits)` → tanh → π/2 → variational circuit → `Linear(n_qubits→n_classes)`
 
-Implementation: `code/demo_hybrid.ipynb` (Mari et al. 2019 / PennyLane quantum transfer learning pattern).
+Defaults in the notebook: 4 qubits, depth 4, lr 0.0004, batch 16, 10 epochs.
 
-## Dataset subsets
+## Experiments
 
-| ID | Task | Classes | Qubits |
+| ID | What | Classes | Qubits |
 |----|------|---------|--------|
 | S1 | Unrelated leaf categories | 4 | 4 |
-| S2 | Ten tomato classes | 10 | 10 or 16 |
-| S3 | Four tomato classes (depth ablation) | 4 | 4 |
+| S2 | Tomato subset | 10 | 10 or 16 |
+| S3 | Tomato subset, depth sweep | 4 | 4 |
 
-Example S1 layout:
+S1 folder layout:
 
 ```
 code/data/
@@ -30,16 +28,17 @@ code/data/
 
 ## Protocol
 
-1. Resize 256 → center crop 224, ImageNet normalization
-2. 80/20 train/validation split, up to 400 images/class (S1), seed 42
-3. Metrics: accuracy, macro precision/recall/F1
-4. Baselines (run separately in private development repo): Simple CNN, ResNet18, DenseNet121
+- Resize 256, center crop 224, ImageNet normalization
+- 80/20 train/val, up to 400 images per class for S1, seed 42
+- Metrics: accuracy, macro precision/recall/F1
 
-## Hardware (original runs)
+ResNet18 and DenseNet121 baselines were trained in our private dev repo with the same splits.
 
-NVIDIA RTX 3050 Ti, Intel i7-12700H; PennyLane `default.qubit` simulator.
+## Hardware we used
 
-## Shipped results
+RTX 3050 Ti, i7-12700H. PennyLane `default.qubit` simulator.
 
-Precomputed validation metrics: `results/tables/*.csv`  
-Paper figures: `figures/`
+## Precomputed outputs
+
+Metrics: `results/tables/*.csv`  
+Figures: `figures/`
