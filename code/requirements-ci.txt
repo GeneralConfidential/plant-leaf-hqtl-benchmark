@@ -1,0 +1,8 @@
+# CPU-only dependencies for GitHub Actions (no CUDA index).
+torch>=2.3.0
+torchvision>=0.18.0
+pennylane>=0.30.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+pillow>=10.0.0
+matplotlib>=3.8.0

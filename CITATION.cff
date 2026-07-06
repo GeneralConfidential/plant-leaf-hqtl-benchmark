@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite it."
+title: "Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification: Code and Reproduction Artifacts"
+version: 1.0.0
+date-released: 2026-07-06
+authors:
+  - family-names: Gautam
+    given-names: Raag
+    affiliation: "School of Computer Science and Engineering, VIT-AP University"
+  - family-names: B
+    given-names: Shreyas M
+    affiliation: "School of Computer Science and Engineering, VIT-AP University"
+repository-code: "https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark"
+license: MIT
+keywords:
+  - quantum machine learning
+  - variational quantum circuits
+  - transfer learning
+  - plant disease
+  - pennylane
+  - pytorch
+  - plantvillage
+abstract: >-
+  Code, notebooks, and validation-metric tables for an empirical study of
+  hybrid quantum-classical transfer learning (frozen ResNet18 + PennyLane VQC
+  head) on PlantVillage-derived leaf-image subsets, with classical baselines
+  and multi-seed results on ten-class tomato classification.

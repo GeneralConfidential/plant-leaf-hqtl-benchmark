@@ -1,28 +1,16 @@
-# Experiment code
+# Code
 
-Run `demo_hybrid.ipynb` for the primary hybrid model pipeline.
+Training and analysis scripts for the public benchmark repo.
 
-## Data layout
+| Script | Purpose |
+|--------|---------|
+| `run_smoke_test.py` | CPU smoke test (synthetic data, no download) |
+| `run_s1_linear_head.py` | S1 frozen linear head |
+| `run_s2_seeds.py` | S2a multi-seed (linear, ResNet18 FT, hybrid) |
+| `build_efficiency_table.py` | Params + wall-clock table |
+| `plot_s2a_figure.py` | S2a accuracy/cost figure |
+| `generate_manifest.py` | SHA256 manifest for `results/tables/` |
+| `check_artifacts.py` | Verify manifest (used in CI) |
+| `demo_hybrid.ipynb` | Interactive hybrid training |
 
-```
-data/
-├── Apple___healthy/
-├── Blueberry___healthy/
-├── Cherry___healthy/
-└── Background_without_leaves/
-```
-
-The notebook creates `scl_metadata/train` and `scl_metadata/val` on first run.
-
-## Hyperparameters (defaults in notebook)
-
-| Parameter | Value |
-|-----------|-------|
-| n_qubits | 4 |
-| q_depth | 4 |
-| batch_size | 16 |
-| learning_rate | 0.0004 |
-| num_epochs | 10 |
-| GLOBAL_SEED | 42 |
-
-For tomato and multi-class experiments, adjust `n_qubits`, `n_classes`, and `q_depth` to match the paper tables.
+Install: `pip install -r requirements.txt` (GPU) or `requirements-ci.txt` (CPU/CI).

@@ -1,9 +1,10 @@
-torch>=2.3.0
-torchvision>=0.18.0
-pennylane>=0.30.0
-numpy>=1.23.0
+# Pinned via private repo uv lock (CUDA cu124). See parent sdp/pyproject.toml.
+torch==2.6.0
+torchvision==0.21.0
+pennylane==0.45.1
+numpy>=1.26.0
 scikit-learn>=1.4.0
-Pillow>=10.0.0
+pillow>=10.0.0
 matplotlib>=3.8.0
 seaborn>=0.13.0
 jupyter>=1.0.0

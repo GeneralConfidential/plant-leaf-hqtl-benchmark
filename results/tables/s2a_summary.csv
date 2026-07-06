@@ -1,0 +1,4 @@
+model,accuracy_mean,accuracy_std,f1_mean,f1_std,train_seconds_mean
+hybrid,0.6948,0.0405,0.6655,0.0508,3384.1
+linear_head,0.8780,0.0193,0.8773,0.0206,192.8
+resnet18_ft,0.9375,0.0167,0.9376,0.0165,250.3
