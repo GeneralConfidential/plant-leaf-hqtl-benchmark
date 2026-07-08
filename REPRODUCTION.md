@@ -59,7 +59,7 @@ python code/run_s2_seeds.py --models linear_head resnet18_ft hybrid --seeds 42 1
 
 # S2b multi-seed (hybrid only, 16 qubits)
 python code/run_s2_seeds.py --models hybrid --n-qubits 16 --seeds 42 123 456 \
-  --runs-csv results/elevation/s2b_runs.csv --summary-csv results/elevation/s2b_summary.csv
+  --runs-csv results/tables/s2b_runs.csv --summary-csv results/tables/s2b_summary.csv
 
 # Efficiency table
 python code/build_efficiency_table.py
