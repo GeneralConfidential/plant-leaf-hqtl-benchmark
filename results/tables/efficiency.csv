@@ -1,6 +1,7 @@
 model,setting,trainable_params,trainable_params_fmt,train_seconds_10epochs,val_accuracy
 "Hybrid (4q, d=4)",S1,2088,2.1K,,0.99
 "Hybrid (10q, d=4)",S2a,5280,5.3K,3384.1,0.69
+"Hybrid (16q, d=4)",S2b,8442,8.4K,27636.6,0.79
 Linear head (K=4),S1,2052,2.1K,42.7,0.99
 Linear head (K=10),S2a,5130,5.1K,192.8,0.88
 ResNet18 fine-tune,S1,11178564,11.18M,,

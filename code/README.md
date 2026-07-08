@@ -6,7 +6,7 @@ Training and analysis scripts for the public benchmark repo.
 |--------|---------|
 | `run_smoke_test.py` | CPU smoke test (synthetic data, no download) |
 | `run_s1_linear_head.py` | S1 frozen linear head |
-| `run_s2_seeds.py` | S2a multi-seed (linear, ResNet18 FT, hybrid) |
+| `run_s2_seeds.py` | S2a/S2b multi-seed (linear, ResNet18 FT, hybrid; `--n-qubits 16` for S2b) |
 | `build_efficiency_table.py` | Params + wall-clock table |
 | `plot_s2a_figure.py` | S2a accuracy/cost figure |
 | `generate_manifest.py` | SHA256 manifest for `results/tables/` |

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Multi-seed S2 evaluation (10 tomato classes, 10 qubits)."""
+"""Multi-seed S2 evaluation (10 tomato classes; 10 or 16 qubits)."""
 
 from __future__ import annotations
 
@@ -164,15 +164,19 @@ def run_one(
 
 def write_summary(runs_csv: Path, summary_csv: Path) -> None:
     by_model: dict[str, list[dict[str, float]]] = {}
+    latest_by_seed: dict[tuple[str, str], dict[str, str]] = {}
     with runs_csv.open(newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
-            by_model.setdefault(row["model"], []).append(
-                {
-                    "accuracy": float(row["accuracy"]),
-                    "f1": float(row["f1"]),
-                    "train_seconds": float(row["train_seconds"]),
-                }
-            )
+            latest_by_seed[(row["seed"], row["model"])] = row
+
+    for (seed, model_name), row in sorted(latest_by_seed.items()):
+        by_model.setdefault(model_name, []).append(
+            {
+                "accuracy": float(row["accuracy"]),
+                "f1": float(row["f1"]),
+                "train_seconds": float(row["train_seconds"]),
+            }
+        )
 
     summary_csv.parent.mkdir(parents=True, exist_ok=True)
     with summary_csv.open("w", newline="", encoding="utf-8") as f:

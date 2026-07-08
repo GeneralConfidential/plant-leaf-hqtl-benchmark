@@ -17,6 +17,14 @@ Code and experiment outputs for hybrid quantum-classical transfer learning (HQTL
 
 On the same frozen ResNet18 embeddings, a linear head outperforms the VQC head by **~18 pp** at **~17× lower** training time. See `results/tables/s2a_summary.csv`.
 
+## Qubit scaling (S2b: 16 qubits, 3 seeds — hybrid only)
+
+| Model | Val. accuracy | 10-epoch time |
+|-------|---------------|---------------|
+| HQTL hybrid (16 qubits) | **0.787 ± 0.031** | ~27 637 s |
+
+Raising qubits from 10 to 16 improves hybrid mean accuracy by **~9 pp** but remains below the frozen linear head and classical fine-tuning. See `results/tables/s2b_summary.csv`.
+
 ## Quick start
 
 **CPU smoke test (no data download, &lt; 5 min):**
@@ -57,6 +65,12 @@ Full S2a multi-seed training (GPU, hours):
 make s2a
 ```
 
+S2b hybrid only (16 qubits, ~7.7 h/seed):
+
+```bash
+make s2b
+```
+
 ## Citation
 
 ```bibtex
@@ -64,7 +78,7 @@ make s2a
   title        = {Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification: Code and Reproduction Artifacts},
   author       = {Gautam, Raag and B, Shreyas M},
   year         = {2026},
-  version      = {1.0.0},
+  version      = {1.0.1},
   url          = {https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark},
   note         = {Add Zenodo DOI after release}
 }

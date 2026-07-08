@@ -7,7 +7,9 @@ Maps each paper artifact to its source file and generator.
 | Table: S1 metrics (`tab:four_unrelated`) | `results/tables/s1_four_unrelated.csv` | Original experiments / `run_s1_linear_head.py` |
 | Table: S2a summary (`tab:ten_tomato_10q`) | `results/tables/s2a_ten_tomato_10q_summary.csv` | `run_s2_seeds.py` |
 | Table: S2a per-seed (`tab:s2a_per_seed`) | `results/tables/s2a_runs.csv` | `run_s2_seeds.py` |
-| Table: S2b 16q (`tab:ten_tomato_16q`) | `results/tables/s2b_ten_tomato_16q.csv` | Single-seed exploratory run |
+| Table: S2b per-seed (`tab:s2b_per_seed`) | `results/tables/s2b_runs.csv` | `run_s2_seeds.py --n-qubits 16` |
+| Table: S2b summary | `results/tables/s2b_summary.csv` | `run_s2_seeds.py --n-qubits 16` |
+| Table: S2b 16q (`tab:summary` row) | `results/tables/s2b_ten_tomato_16q.csv` | Hybrid from `s2b_summary.csv`; R18/D121 single-seed |
 | Table: S3 depth-4 (`tab:four_tomato`) | `results/tables/s3_four_tomato_depth4.csv` | Original notebook experiments |
 | Table: efficiency (`tab:efficiency`) | `results/tables/efficiency.csv` | `build_efficiency_table.py` |
 | Figure: architecture (`fig:arch`) | TikZ in manuscript | — |

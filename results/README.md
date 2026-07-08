@@ -12,6 +12,14 @@ Validation metrics (CSV) and figure index. See `ARTIFACTS.md` for paper mapping.
 
 Source: `tables/s2a_summary.csv` (per-seed rows in `tables/s2a_runs.csv`).
 
+## S2b multi-seed summary (10 tomato classes, 16 qubits — hybrid only)
+
+| Model | Accuracy (mean ± std) | F1 (mean ± std) | Train time (mean) |
+|-------|----------------------|-----------------|-------------------|
+| hybrid | 0.787 ± 0.031 | 0.783 ± 0.033 | 27 636.6 s |
+
+Source: `tables/s2b_summary.csv` (per-seed rows in `tables/s2b_runs.csv`).
+
 ## All tables
 
 | File | Description |
@@ -22,7 +30,9 @@ Source: `tables/s2a_summary.csv` (per-seed rows in `tables/s2a_runs.csv`).
 | `tables/s2a_runs.csv` | Per-seed S2a runs |
 | `tables/s2a_summary.csv` | S2a aggregated summary |
 | `tables/efficiency.csv` | Trainable params, wall-clock, val accuracy |
-| `tables/s2b_ten_tomato_16q.csv` | S2b (16 qubits) — single-seed exploratory |
+| `tables/s2b_runs.csv` | Per-seed S2b hybrid runs |
+| `tables/s2b_summary.csv` | S2b aggregated summary |
+| `tables/s2b_ten_tomato_16q.csv` | S2b full metrics (hybrid 3-seed mean; R18/D121 single-seed) |
 | `tables/s3_four_tomato_depth4.csv` | S3 depth-4 tomato subset |
 
 Figures: `../figures/`. Reproduction: `../REPRODUCTION.md`.

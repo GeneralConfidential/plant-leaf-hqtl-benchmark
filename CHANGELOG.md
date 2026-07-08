@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.0.1 — 2026-07-08
+
+### Added
+- S2b multi-seed hybrid runs (16 qubits, seeds 42/123/456): `s2b_runs.csv`, `s2b_summary.csv`
+- `make s2b` / `reproduce.ps1 s2b` entrypoint
+- Efficiency table row for Hybrid (16q, S2b)
+
+### Changed
+- `s2b_ten_tomato_16q.csv`: hybrid accuracy updated to 3-seed mean (0.79)
+- `run_s2_seeds.py`: summary dedupes by `(seed, model)` (keeps last run)
+- `build_efficiency_table.py`: reads S2b CSVs; inline LaTeX table format for manuscript
+
+### Results (S2b, hybrid only)
+- HQTL hybrid (16q): **0.787 ± 0.031** accuracy (~27 637 s / 10 epochs)
+
 ## v1.0.0 — 2026-07-06
 
 ### Added
@@ -17,5 +32,4 @@
 - ResNet18 fine-tune: **0.938 ± 0.017** accuracy
 
 ### Notes
-- S2b (16 qubits) remains a single-seed exploratory result; see paper footnote.
 - PlantVillage images are not bundled; see `REPRODUCTION.md`.

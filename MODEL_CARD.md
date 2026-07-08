@@ -28,13 +28,13 @@ Curated subsets of [PlantVillage](https://data.mendeley.com/datasets/tywbtsjrjv/
 
 ## Evaluation
 
-Macro-averaged precision, recall, F1, and accuracy on the validation split. S2a reports mean ± std over seeds `{42, 123, 456}`.
+Macro-averaged precision, recall, F1, and accuracy on the validation split. S2a reports mean ± std over seeds `{42, 123, 456}` for hybrid, linear head, and ResNet18. S2b reports mean ± std for hybrid only (16 qubits, same seeds).
 
 ## Limitations
 
 - **Protocol asymmetry:** hybrid and linear head freeze ResNet18; ResNet18/DenseNet121 baselines fine-tune the full network.
 - **No held-out test set** on multi-seed runs.
-- **Simulation cost:** per-sample VQC execution is much slower than a linear head (~17× wall-clock on S2a).
+- **Simulation cost:** per-sample VQC execution is much slower than a linear head (~17× wall-clock on S2a; ~8× longer on S2b vs S2a hybrid).
 - **Software:** PennyLane 0.45 / PyTorch 2.6 (see `code/requirements.txt`).
 
 ## Ethical considerations

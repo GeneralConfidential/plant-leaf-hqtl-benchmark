@@ -30,12 +30,15 @@ DEFAULT_TEX = (
 S1_RUNS = elevation_results_dir() / "s1_linear_head.csv"
 S2_RUNS = elevation_results_dir() / "s2a_runs.csv"
 S2_SUMMARY = elevation_results_dir() / "s2a_summary.csv"
+S2B_RUNS = elevation_results_dir() / "s2b_runs.csv"
+S2B_SUMMARY = elevation_results_dir() / "s2b_summary.csv"
 
 # Published single-seed accuracies where multi-seed not yet available
 KNOWN_S1_SECONDS = {"linear_head": 42.7}
 PUBLISHED_VAL_ACC = {
     ("hybrid", "S1"): 0.99,
     ("hybrid", "S2a"): 0.69,
+    ("hybrid", "S2b"): 0.79,
     ("densenet121_ft", "S1"): 0.99,
     ("densenet121_ft", "S2a"): 0.91,
     ("simple_cnn", "S1"): 0.74,
@@ -53,17 +56,23 @@ def parse_args() -> argparse.Namespace:
 def mean_train_seconds(model_name: str, runs_csv: Path | None) -> float | None:
     if runs_csv is None or not runs_csv.exists():
         return None
-    times = []
+    latest_by_seed: dict[str, float] = {}
     with runs_csv.open(newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             if row["model"] == model_name:
-                times.append(float(row["train_seconds"]))
+                latest_by_seed[row["seed"]] = float(row["train_seconds"])
+    times = list(latest_by_seed.values())
     return sum(times) / len(times) if times else None
 
 
 def mean_accuracy(model_key: str, setting: str) -> float | None:
     if setting == "S2a" and S2_SUMMARY.exists():
         with S2_SUMMARY.open(newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                if row["model"] == model_key:
+                    return float(row["accuracy_mean"])
+    if setting == "S2b" and model_key == "hybrid" and S2B_SUMMARY.exists():
+        with S2B_SUMMARY.open(newline="", encoding="utf-8") as f:
             for row in csv.DictReader(f):
                 if row["model"] == model_key:
                     return float(row["accuracy_mean"])
@@ -79,6 +88,7 @@ def build_rows(device: torch.device) -> list[dict]:
     configs = [
         ("Hybrid (4q, d=4)", "hybrid", "S1", lambda: build_hybrid_model(4, device, n_qubits=4, q_depth=4)),
         ("Hybrid (10q, d=4)", "hybrid", "S2a", lambda: build_hybrid_model(10, device, n_qubits=10, q_depth=4)),
+        ("Hybrid (16q, d=4)", "hybrid", "S2b", lambda: build_hybrid_model(10, device, n_qubits=16, q_depth=4)),
         ("Linear head (K=4)", "linear_head", "S1", lambda: build_linear_head_model(4, device)),
         ("Linear head (K=10)", "linear_head", "S2a", lambda: build_linear_head_model(10, device)),
         ("ResNet18 fine-tune", "resnet18_ft", "S1", lambda: build_resnet18_finetune(4, device)),
@@ -95,7 +105,10 @@ def build_rows(device: torch.device) -> list[dict]:
         params = count_trainable_parameters(model)
         del model
 
-        train_seconds = mean_train_seconds(model_key, S2_RUNS if setting == "S2a" else None)
+        train_seconds = mean_train_seconds(
+            model_key,
+            S2B_RUNS if setting == "S2b" else (S2_RUNS if setting == "S2a" else None),
+        )
         if train_seconds is None and setting == "S1":
             train_seconds = KNOWN_S1_SECONDS.get(model_key)
 
@@ -136,11 +149,12 @@ def write_csv(rows: list[dict], path: Path) -> None:
 def write_tex(rows: list[dict], path: Path) -> None:
     lines = [
         "% Paste into manuscript/main.tex (Step 3 efficiency table)",
-        "\\begin{table}[t]",
-        "\\centering",
-        "\\caption{Trainable parameters and 10-epoch training time (validation accuracy reference).}",
+        "\\vspace{-0.35em}",
+        "\\begin{center}",
+        "\\footnotesize",
+        "\\captionof{table}{Trainable parameters and 10-epoch training time (validation accuracy reference).}",
         "\\label{tab:efficiency}",
-        "\\small",
+        "\\resizebox{\\columnwidth}{!}{%",
         "\\begin{tabular}{@{}llrrr@{}}",
         "\\toprule",
         "\\textbf{Model} & \\textbf{Setting} & \\textbf{Params} & \\textbf{Time (s)} & \\textbf{Val acc.} \\\\",
@@ -151,7 +165,16 @@ def write_tex(rows: list[dict], path: Path) -> None:
             f"{row['model']} & {row['setting']} & {row['trainable_params_fmt']} & "
             f"{row['train_seconds_10epochs'] or '---'} & {row['val_accuracy'] or '---'} \\\\"
         )
-    lines.extend(["\\bottomrule", "\\end{tabular}", "\\end{table}"])
+    lines.extend(
+        [
+            "\\bottomrule",
+            "\\end{tabular}%",
+            "}",
+            "\\end{center}",
+            "\\vspace{-0.5em}",
+            "",
+        ]
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote {path}")

@@ -23,7 +23,7 @@ Uses a synthetic 4-class mini-dataset; checks hybrid + linear forward/backward a
 |----|------|---------|--------|
 | S1 | Unrelated leaf categories | 4 | 4 |
 | S2a | Tomato subset (multi-seed) | 10 | 10 |
-| S2b | Tomato subset (exploratory) | 10 | 16 |
+| S2b | Tomato subset (hybrid, multi-seed) | 10 | 16 |
 | S3 | Tomato subset, depth sweep | 4 | 4 |
 
 ### S1 folder layout
@@ -57,6 +57,10 @@ pip install -r code/requirements.txt
 # S2a multi-seed (linear + ResNet18 + hybrid)
 python code/run_s2_seeds.py --models linear_head resnet18_ft hybrid --seeds 42 123 456
 
+# S2b multi-seed (hybrid only, 16 qubits)
+python code/run_s2_seeds.py --models hybrid --n-qubits 16 --seeds 42 123 456 \
+  --runs-csv results/elevation/s2b_runs.csv --summary-csv results/elevation/s2b_summary.csv
+
 # Efficiency table
 python code/build_efficiency_table.py
 
@@ -73,13 +77,13 @@ From the private `sdp` monorepo, use `uv run python paper-release/code/...` with
 ## Protocol
 
 - Resize 256, center crop 224, ImageNet normalization
-- 80/20 train/val, up to 400 images per class, seed 42 (S1) or seeds {42,123,456} (S2a)
+- 80/20 train/val, up to 400 images per class, seed 42 (S1) or seeds {42,123,456} (S2a; S2b hybrid only)
 - Metrics: accuracy, macro precision/recall/F1
 - Hybrid/linear: frozen ResNet18; ResNet18/DenseNet121 baselines: full fine-tune
 
 ## Hardware we used
 
-RTX 3050 Ti, i7-12700H. PennyLane `default.qubit` simulator. Hybrid S2a ~56 min/seed.
+RTX 3050 Ti, i7-12700H. PennyLane `default.qubit` simulator. Hybrid S2a ~56 min/seed; S2b ~7.7 h/seed.
 
 ## Precomputed outputs
 
