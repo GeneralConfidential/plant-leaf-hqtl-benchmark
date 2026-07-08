@@ -13,10 +13,11 @@ from paths import tables_dir
 
 
 def file_sha256(path: Path) -> str:
+    data = path.read_bytes()
+    if path.suffix.lower() == ".csv":
+        data = data.replace(b"\r\n", b"\n")
     digest = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            digest.update(chunk)
+    digest.update(data)
     return digest.hexdigest()
 
 
