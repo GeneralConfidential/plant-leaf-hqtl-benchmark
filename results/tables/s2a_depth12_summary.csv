@@ -1,0 +1,2 @@
+model,accuracy_mean,accuracy_std,f1_mean,f1_std,train_seconds_mean
+hybrid,0.7212,0.0434,0.7070,0.0579,6198.5

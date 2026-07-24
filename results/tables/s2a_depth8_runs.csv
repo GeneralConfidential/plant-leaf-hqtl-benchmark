@@ -1,0 +1,4 @@
+seed,model,accuracy,precision,recall,f1,train_seconds
+42,hybrid,0.8226,0.8246,0.8227,0.8214,6267.0
+123,hybrid,0.8289,0.8321,0.8298,0.8280,5945.6
+456,hybrid,0.8440,0.8446,0.8443,0.8428,5942.5

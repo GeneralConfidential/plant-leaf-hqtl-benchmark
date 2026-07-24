@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use this software or data, please cite it."
 title: "Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification: Code and Reproduction Artifacts"
-version: 1.0.1
-date-released: 2026-07-08
+version: 1.0.2
+date-released: 2026-07-23
 authors:
   - family-names: Gautam
     given-names: Raag
@@ -24,4 +24,5 @@ abstract: >-
   Code, notebooks, and validation-metric tables for an empirical study of
   hybrid quantum-classical transfer learning (frozen ResNet18 + PennyLane VQC
   head) on PlantVillage-derived leaf-image subsets, with classical baselines
-  and multi-seed results on ten-class tomato classification (10 and 16 qubits).
+  and multi-seed results on four-class and ten-class tomato classification
+  (10 and 16 qubits), including a multi-seed circuit-depth ablation.

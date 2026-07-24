@@ -27,22 +27,22 @@ DEFAULT_TEX = (
     if is_private_monorepo()
     else REPO_ROOT / "results" / "tables" / "efficiency_table.tex"
 )
-S1_RUNS = elevation_results_dir() / "s1_linear_head.csv"
+S1_RUNS = elevation_results_dir() / "s1_seeds_runs.csv"
+S1_SUMMARY = elevation_results_dir() / "s1_seeds_summary.csv"
 S2_RUNS = elevation_results_dir() / "s2a_runs.csv"
 S2_SUMMARY = elevation_results_dir() / "s2a_summary.csv"
 S2B_RUNS = elevation_results_dir() / "s2b_runs.csv"
 S2B_SUMMARY = elevation_results_dir() / "s2b_summary.csv"
 
-# Published single-seed accuracies where multi-seed not yet available
-KNOWN_S1_SECONDS = {"linear_head": 42.7}
+# Fallback published accuracies if summary CSVs are missing
 PUBLISHED_VAL_ACC = {
     ("hybrid", "S1"): 0.99,
     ("hybrid", "S2a"): 0.69,
     ("hybrid", "S2b"): 0.79,
-    ("densenet121_ft", "S1"): 0.99,
-    ("densenet121_ft", "S2a"): 0.91,
-    ("simple_cnn", "S1"): 0.74,
-    ("simple_cnn", "S2a"): 0.47,
+    ("densenet121_ft", "S1"): 1.00,
+    ("densenet121_ft", "S2a"): 0.97,
+    ("simple_cnn", "S1"): 0.97,
+    ("simple_cnn", "S2a"): 0.77,
 }
 
 
@@ -65,22 +65,29 @@ def mean_train_seconds(model_name: str, runs_csv: Path | None) -> float | None:
     return sum(times) / len(times) if times else None
 
 
+def _accuracy_from_summary(summary_csv: Path, model_key: str) -> float | None:
+    if not summary_csv.exists():
+        return None
+    with summary_csv.open(newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row["model"] == model_key:
+                return float(row["accuracy_mean"])
+    return None
+
+
 def mean_accuracy(model_key: str, setting: str) -> float | None:
-    if setting == "S2a" and S2_SUMMARY.exists():
-        with S2_SUMMARY.open(newline="", encoding="utf-8") as f:
-            for row in csv.DictReader(f):
-                if row["model"] == model_key:
-                    return float(row["accuracy_mean"])
-    if setting == "S2b" and model_key == "hybrid" and S2B_SUMMARY.exists():
-        with S2B_SUMMARY.open(newline="", encoding="utf-8") as f:
-            for row in csv.DictReader(f):
-                if row["model"] == model_key:
-                    return float(row["accuracy_mean"])
-    if setting == "S1" and model_key == "linear_head" and S1_RUNS.exists():
-        with S1_RUNS.open(newline="", encoding="utf-8") as f:
-            for row in csv.DictReader(f):
-                if row["metric"] == "accuracy":
-                    return float(row["linear_head"])
+    if setting == "S1":
+        acc = _accuracy_from_summary(S1_SUMMARY, model_key)
+        if acc is not None:
+            return acc
+    if setting == "S2a":
+        acc = _accuracy_from_summary(S2_SUMMARY, model_key)
+        if acc is not None:
+            return acc
+    if setting == "S2b":
+        acc = _accuracy_from_summary(S2B_SUMMARY, model_key)
+        if acc is not None:
+            return acc
     return PUBLISHED_VAL_ACC.get((model_key, setting))
 
 
@@ -105,12 +112,12 @@ def build_rows(device: torch.device) -> list[dict]:
         params = count_trainable_parameters(model)
         del model
 
-        train_seconds = mean_train_seconds(
-            model_key,
-            S2B_RUNS if setting == "S2b" else (S2_RUNS if setting == "S2a" else None),
-        )
-        if train_seconds is None and setting == "S1":
-            train_seconds = KNOWN_S1_SECONDS.get(model_key)
+        runs_csv = {
+            "S1": S1_RUNS,
+            "S2a": S2_RUNS,
+            "S2b": S2B_RUNS,
+        }.get(setting)
+        train_seconds = mean_train_seconds(model_key, runs_csv)
 
         val_acc = mean_accuracy(model_key, setting)
 
@@ -149,7 +156,7 @@ def write_csv(rows: list[dict], path: Path) -> None:
 def write_tex(rows: list[dict], path: Path) -> None:
     lines = [
         "% Paste into manuscript/main.tex (Step 3 efficiency table)",
-        "\\vspace{-0.35em}",
+        "\\vspace{-0.55em}",
         "\\begin{center}",
         "\\footnotesize",
         "\\captionof{table}{Trainable parameters and 10-epoch training time (validation accuracy reference).}",
@@ -171,7 +178,7 @@ def write_tex(rows: list[dict], path: Path) -> None:
             "\\end{tabular}%",
             "}",
             "\\end{center}",
-            "\\vspace{-0.5em}",
+            "\\vspace{-0.75em}",
             "",
         ]
     )

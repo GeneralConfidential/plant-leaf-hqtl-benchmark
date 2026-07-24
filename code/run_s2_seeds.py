@@ -16,8 +16,16 @@ from pennylane import numpy as qnp
 from torch.optim import lr_scheduler
 
 from data_utils import build_dataloaders, prepare_class_split, set_global_seed
-from dataset_config import S2_SEEDS, S2_TOMATO_CLASSES
-from hybrid_model import build_hybrid_model, build_linear_head_model, build_resnet18_finetune
+from dataset_config import S1_CLASSES, S2_SEEDS, S2_TOMATO_CLASSES
+
+CLASS_SETS = {"s1": S1_CLASSES, "s2": S2_TOMATO_CLASSES}
+from hybrid_model import (
+    SimpleCNN,
+    build_densenet121_finetune,
+    build_hybrid_model,
+    build_linear_head_model,
+    build_resnet18_finetune,
+)
 from metrics_utils import evaluate_model
 from train_utils import train_model
 
@@ -54,10 +62,11 @@ def parse_args() -> argparse.Namespace:
         "--models",
         nargs="+",
         default=["linear_head", "resnet18_ft", "hybrid"],
-        choices=["linear_head", "resnet18_ft", "hybrid"],
+        choices=["linear_head", "resnet18_ft", "hybrid", "densenet121_ft", "simple_cnn"],
     )
     parser.add_argument("--n-qubits", type=int, default=10)
     parser.add_argument("--q-depth", type=int, default=4)
+    parser.add_argument("--class-set", choices=list(CLASS_SETS), default="s2")
     parser.add_argument("--rebuild-splits", action="store_true")
     parser.add_argument("--skip-existing", action="store_true")
     return parser.parse_args()
@@ -100,13 +109,18 @@ def build_model(name: str, n_classes: int, device: torch.device, args: argparse.
         return build_linear_head_model(n_classes, device)
     if name == "resnet18_ft":
         return build_resnet18_finetune(n_classes, device)
+    if name == "densenet121_ft":
+        return build_densenet121_finetune(n_classes, device)
+    if name == "simple_cnn":
+        return SimpleCNN(n_classes).to(device)
     raise ValueError(name)
 
 
 def build_optimizer(model: nn.Module, name: str):
-    if name in ("hybrid", "linear_head"):
-        params = model.fc.parameters() if name == "linear_head" else model.fc.parameters()
-        return optim.Adam(params, lr=HEAD_LR)
+    if name == "hybrid":
+        return optim.Adam(model.fc.parameters(), lr=HEAD_LR)
+    if name == "linear_head":
+        return optim.Adam(model.fc.parameters(), lr=HEAD_LR)
     return optim.Adam(model.parameters(), lr=CLASSICAL_LR)
 
 
@@ -120,16 +134,17 @@ def run_one(
     qnp.random.seed(seed)
     os.environ["OMP_NUM_THREADS"] = "1"
 
+    classes = CLASS_SETS[args.class_set]
     processed_dir = args.processed_base / f"seed_{seed}"
     prepare_class_split(
         args.data_dir,
         processed_dir,
-        S2_TOMATO_CLASSES,
+        classes,
         seed,
         rebuild=args.rebuild_splits,
     )
     dataloaders, dataset_sizes = build_dataloaders(processed_dir, BATCH_SIZE)
-    n_classes = len(S2_TOMATO_CLASSES)
+    n_classes = len(classes)
 
     print(f"\n=== seed={seed} model={model_name} sizes={dataset_sizes} ===")
     model = build_model(model_name, n_classes, device, args)

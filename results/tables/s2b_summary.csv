@@ -1,2 +1,6 @@
 model,accuracy_mean,accuracy_std,f1_mean,f1_std,train_seconds_mean
+densenet121_ft,0.9610,0.0076,0.9610,0.0077,531.1
 hybrid,0.7874,0.0311,0.7831,0.0327,27636.6
+linear_head,0.8780,0.0193,0.8773,0.0206,213.9
+resnet18_ft,0.9484,0.0148,0.9483,0.0146,267.7
+simple_cnn,0.7723,0.0293,0.7701,0.0293,210.5

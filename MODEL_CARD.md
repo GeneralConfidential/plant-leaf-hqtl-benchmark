@@ -22,13 +22,16 @@ Frozen ImageNet ResNet18 feature extractor + PennyLane variational quantum circu
 Curated subsets of [PlantVillage](https://data.mendeley.com/datasets/tywbtsjrjv/1):
 - S1: 4 visually distinct classes
 - S2: 10 tomato classes
-- S3: 4 tomato classes (depth ablation)
+- S3: 4 tomato classes (single-seed moderate-difficulty check)
 
 80/20 stratified train/validation split; up to 400 images per class.
 
 ## Evaluation
 
-Macro-averaged precision, recall, F1, and accuracy on the validation split. S2a reports mean ± std over seeds `{42, 123, 456}` for hybrid, linear head, and ResNet18. S2b reports mean ± std for hybrid only (16 qubits, same seeds).
+Macro-averaged precision, recall, F1, and accuracy on the validation split.
+S1, S2a, and S2b report mean ± std over seeds `{42, 123, 456}` for all models.
+S2a hybrid depth ablation (`d ∈ {4,6,8,10,12,14,16}`) uses the same three seeds per depth.
+S3 remains a single-seed reference.
 
 ## Limitations
 
