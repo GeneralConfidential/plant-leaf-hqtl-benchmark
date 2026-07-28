@@ -1,12 +1,15 @@
-model,setting,trainable_params,trainable_params_fmt,train_seconds_10epochs,val_accuracy
-"Hybrid (4q, d=4)",S1,2088,2.1K,219.1,0.99
-"Hybrid (10q, d=4)",S2a,5280,5.3K,3384.1,0.69
-"Hybrid (16q, d=4)",S2b,8442,8.4K,27636.6,0.79
-Linear head (K=4),S1,2052,2.1K,36.8,0.99
-Linear head (K=10),S2a,5130,5.1K,192.8,0.88
-ResNet18 fine-tune,S1,11178564,11.18M,65.1,0.99
-ResNet18 fine-tune,S2a,11181642,11.18M,250.3,0.94
-DenseNet121 fine-tune,S1,6957956,6.96M,172.5,1.00
-DenseNet121 fine-tune,S2a,6964106,6.96M,434.7,0.97
-Simple CNN,S1,25710148,25.71M,67.6,0.97
-Simple CNN,S2a,25710922,25.71M,138.8,0.77
+model,setting,trainable_params,trainable_params_fmt,train_seconds_10epochs,val_accuracy,val_accuracy_std
+"Hybrid (4q, d=4)",S1,2088,2.1K,219.1,0.994,0.003
+"Hybrid (10q, d=4)",S2a,5280,5.3K,3384.1,0.695,0.041
+"Hybrid (16q, d=4)",S2b,8442,8.4K,27636.6,0.787,0.031
+Linear head (K=4),S1,2052,2.1K,36.8,0.992,0.004
+Linear head (K=10),S2a,5130,5.1K,192.8,0.878,0.019
+"MLP head (tanh, K=4)",S1,2072,2.1K,79.4,0.990,0.005
+"MLP head (tanh, K=10)",S2a,5240,5.2K,168.9,0.844,0.019
+"MLP head (tanh, K=10)",S2b,8378,8.4K,171.8,0.864,0.013
+ResNet18 fine-tune,S1,11178564,11.18M,65.1,0.995,0.005
+ResNet18 fine-tune,S2a,11181642,11.18M,250.3,0.938,0.017
+DenseNet121 fine-tune,S1,6957956,6.96M,172.5,0.998,0.002
+DenseNet121 fine-tune,S2a,6964106,6.96M,434.7,0.972,0.007
+Simple CNN,S1,25710148,25.71M,67.6,0.971,0.002
+Simple CNN,S2a,25710922,25.71M,138.8,0.774,0.036

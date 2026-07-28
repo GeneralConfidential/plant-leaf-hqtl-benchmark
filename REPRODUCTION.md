@@ -71,6 +71,18 @@ python code/run_s2_seeds.py --models linear_head resnet18_ft densenet121_ft simp
 python code/run_s2_seeds.py --models hybrid --n-qubits 10 --q-depth 8 --seeds 42 123 456 \
   --runs-csv results/tables/s2a_depth8_runs.csv --summary-csv results/tables/s2a_depth8_summary.csv
 
+# S3 multi-seed (all models, 4 qubits, four tomato classes)
+python code/run_s2_seeds.py --class-set s3 --models linear_head resnet18_ft densenet121_ft simple_cnn hybrid \
+  --n-qubits 4 --seeds 42 123 456 \
+  --runs-csv results/tables/s3_seeds_runs.csv --summary-csv results/tables/s3_seeds_summary.csv
+
+# Circuit-removal ablation: add the matched nonlinear heads to any setting above by
+# appending them to --models with the same --runs-csv/--summary-csv, e.g. for S2a:
+python code/run_s2_seeds.py --models mlp_tanh_head mlp_head mlp_leaky_head --seeds 42 123 456
+
+# Dead-unit diagnosis for the narrow ReLU head (explains the S3 ReLU variance)
+python code/diagnose_mlp_head.py --activation relu --n-hidden 4 --seeds 42 123 456
+
 # Efficiency table + figures
 python code/build_efficiency_table.py
 python code/plot_s2a_figure.py
@@ -86,7 +98,7 @@ From the private `sdp` monorepo, use `uv run python paper-release/code/...` with
 ## Protocol
 
 - Resize 256, center crop 224, ImageNet normalization
-- 80/20 train/val, up to 400 images per class, seeds {42,123,456} for S1/S2a/S2b (and each S2a depth); S3 single-seed 42
+- 80/20 train/val, up to 400 images per class, seeds {42,123,456} for S1/S2a/S2b/S3 (and each S2a depth)
 - Metrics: accuracy, macro precision/recall/F1
 - Hybrid/linear: frozen ResNet18; ResNet18/DenseNet121 baselines: full fine-tune
 

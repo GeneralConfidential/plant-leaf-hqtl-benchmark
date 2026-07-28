@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.0.3 — unreleased
+
+### Added
+- S3 multi-seed (all 5 models × seeds 42/123/456): `s3_seeds_runs.csv`, `s3_seeds_summary.csv`
+- Circuit-removal ablation: a parameter-matched nonlinear head that reuses the dressed
+  head's widths and replaces only the variational circuit with a scalar nonlinearity,
+  run across S1/S2a/S2b/S3 with `tanh`, ReLU, and LeakyReLU variants
+- `build_mlp_head_model(..., activation=...)` in `hybrid_model.py`; `mlp_tanh_head`,
+  `mlp_head`, `mlp_leaky_head` model keys in `run_s2_seeds.py`
+- `diagnose_mlp_head.py`: measures per-unit activation rates, reproducing the dead-unit
+  collapse behind the narrow ReLU head's variance
+
+### Changed
+- Efficiency table reports validation accuracy as mean ± std and includes the matched
+  nonlinear head rows
+
+### Headline results (3 seeds)
+- Removing the circuit at matched width and parameter count (99.2% of hybrid head params)
+  **improves** accuracy on both fine-grained settings: S2a 0.695 ± 0.041 → **0.844 ± 0.019**
+  (+14.9 pp), S2b 0.787 ± 0.031 → **0.864 ± 0.013** (+7.6 pp), with non-overlapping std
+- S1 and S3 are unchanged within noise (0.994 → 0.990; 0.901 → 0.904)
+- Narrow unbounded activations are seed-sensitive: S3 ReLU **0.720 ± 0.201**,
+  LeakyReLU **0.743 ± 0.195**; `tanh` was stable in every setting
+
 ## v1.0.2 — 2026-07-23
 
 ### Added

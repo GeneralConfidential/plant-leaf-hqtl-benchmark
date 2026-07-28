@@ -94,6 +94,45 @@ def build_linear_head_model(n_classes: int, device: torch.device) -> nn.Module:
     return model.to(device)
 
 
+MLP_HEAD_ACTIVATIONS = ("relu", "tanh", "leaky_relu")
+
+
+def _mlp_activation(name: str) -> nn.Module:
+    if name == "relu":
+        return nn.ReLU(inplace=True)
+    if name == "tanh":
+        return nn.Tanh()
+    if name == "leaky_relu":
+        return nn.LeakyReLU(0.01, inplace=True)
+    raise ValueError(f"unknown MLP activation: {name}")
+
+
+def build_mlp_head_model(
+    n_classes: int,
+    device: torch.device,
+    *,
+    n_hidden: int = 10,
+    activation: str = "relu",
+) -> nn.Module:
+    """Frozen ResNet18 with a one-hidden-layer MLP head.
+
+    Mirrors DressedQuantumNet widths (512 -> n_hidden -> n_classes) so the head is
+    parameter-matched to the hybrid, with the VQC replaced by a classical activation.
+    With activation="tanh" this is exactly the dressed head minus the quantum circuit;
+    the pi/2 scaling used by DressedQuantumNet is absorbed by the following linear layer.
+    """
+    weights = torchvision.models.ResNet18_Weights.IMAGENET1K_V1
+    model = torchvision.models.resnet18(weights=weights)
+    for param in model.parameters():
+        param.requires_grad = False
+    model.fc = nn.Sequential(
+        nn.Linear(512, n_hidden),
+        _mlp_activation(activation),
+        nn.Linear(n_hidden, n_classes),
+    )
+    return model.to(device)
+
+
 def build_resnet18_finetune(n_classes: int, device: torch.device) -> nn.Module:
     weights = torchvision.models.ResNet18_Weights.IMAGENET1K_V1
     model = torchvision.models.resnet18(weights=weights)

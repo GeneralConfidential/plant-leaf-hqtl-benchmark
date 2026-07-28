@@ -12,7 +12,10 @@ Maps each paper artifact to its source file and generator.
 | Table: S2b summary (`tab:s2b_per_seed`) | `results/tables/s2b_summary.csv` | `run_s2_seeds.py --n-qubits 16` |
 | Table: S2b per-seed | `results/tables/s2b_runs.csv` | `run_s2_seeds.py --n-qubits 16` |
 | Table: S2a depth summaries | `results/tables/s2a_depth{6,8,10,12,14,16}_summary.csv` | `run_s2_seeds.py --q-depth …` |
-| Table: S3 depth-4 (`tab:summary` row) | `results/tables/s3_four_tomato_depth4.csv` | Original notebook experiments |
+| Table: S3 depth-4 (`tab:summary` row) | `results/tables/s3_four_tomato_depth4.csv` | `run_s2_seeds.py --class-set s3` (3 seeds) |
+| Table: S3 per-seed / summary | `results/tables/s3_seeds_runs.csv`, `s3_seeds_summary.csv` | `run_s2_seeds.py --class-set s3` |
+| Table: circuit-removal ablation (`tab:removal`) | the four `*_summary.csv` files above (rows `mlp_tanh_head`, `mlp_head`, `mlp_leaky_head`) | `run_s2_seeds.py --models mlp_tanh_head …` |
+| Dead-unit diagnosis (S3 ReLU instability) | console output | `diagnose_mlp_head.py` |
 | Table: efficiency (`tab:efficiency`) | `results/tables/efficiency.csv` | `build_efficiency_table.py` |
 | Figure: architecture (`fig:arch`) | TikZ in manuscript | — |
 | Figure: S1 predictions (`fig:predictions`) | `figures/sample_predictions.png` | `demo_hybrid.ipynb` |

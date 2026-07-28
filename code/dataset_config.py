@@ -20,4 +20,12 @@ S2_TOMATO_CLASSES = (
     "Tomato___healthy",
 )
 
+# S3: four-class tomato moderate-difficulty subset (4 qubits, depth 4).
+S3_TOMATO_CLASSES = (
+    "Tomato___Bacterial_spot",
+    "Tomato___Early_blight",
+    "Tomato___Late_blight",
+    "Tomato___healthy",
+)
+
 S2_SEEDS = (42, 123, 456)

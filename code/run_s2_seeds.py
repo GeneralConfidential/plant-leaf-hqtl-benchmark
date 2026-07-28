@@ -16,14 +16,22 @@ from pennylane import numpy as qnp
 from torch.optim import lr_scheduler
 
 from data_utils import build_dataloaders, prepare_class_split, set_global_seed
-from dataset_config import S1_CLASSES, S2_SEEDS, S2_TOMATO_CLASSES
+from dataset_config import S1_CLASSES, S2_SEEDS, S2_TOMATO_CLASSES, S3_TOMATO_CLASSES
 
-CLASS_SETS = {"s1": S1_CLASSES, "s2": S2_TOMATO_CLASSES}
+CLASS_SETS = {"s1": S1_CLASSES, "s2": S2_TOMATO_CLASSES, "s3": S3_TOMATO_CLASSES}
+
+# MLP head variants: same widths as the hybrid head, differing only in activation.
+MLP_HEAD_MODELS = {
+    "mlp_head": "relu",
+    "mlp_tanh_head": "tanh",
+    "mlp_leaky_head": "leaky_relu",
+}
 from hybrid_model import (
     SimpleCNN,
     build_densenet121_finetune,
     build_hybrid_model,
     build_linear_head_model,
+    build_mlp_head_model,
     build_resnet18_finetune,
 )
 from metrics_utils import evaluate_model
@@ -62,7 +70,16 @@ def parse_args() -> argparse.Namespace:
         "--models",
         nargs="+",
         default=["linear_head", "resnet18_ft", "hybrid"],
-        choices=["linear_head", "resnet18_ft", "hybrid", "densenet121_ft", "simple_cnn"],
+        choices=[
+            "linear_head",
+            "mlp_head",
+            "mlp_tanh_head",
+            "mlp_leaky_head",
+            "resnet18_ft",
+            "hybrid",
+            "densenet121_ft",
+            "simple_cnn",
+        ],
     )
     parser.add_argument("--n-qubits", type=int, default=10)
     parser.add_argument("--q-depth", type=int, default=4)
@@ -107,6 +124,13 @@ def build_model(name: str, n_classes: int, device: torch.device, args: argparse.
         )
     if name == "linear_head":
         return build_linear_head_model(n_classes, device)
+    if name in MLP_HEAD_MODELS:
+        return build_mlp_head_model(
+            n_classes,
+            device,
+            n_hidden=args.n_qubits,
+            activation=MLP_HEAD_MODELS[name],
+        )
     if name == "resnet18_ft":
         return build_resnet18_finetune(n_classes, device)
     if name == "densenet121_ft":
@@ -120,6 +144,8 @@ def build_optimizer(model: nn.Module, name: str):
     if name == "hybrid":
         return optim.Adam(model.fc.parameters(), lr=HEAD_LR)
     if name == "linear_head":
+        return optim.Adam(model.fc.parameters(), lr=HEAD_LR)
+    if name in MLP_HEAD_MODELS:
         return optim.Adam(model.fc.parameters(), lr=HEAD_LR)
     return optim.Adam(model.parameters(), lr=CLASSICAL_LR)
 

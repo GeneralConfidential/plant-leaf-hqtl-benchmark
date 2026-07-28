@@ -14,6 +14,7 @@ from hybrid_model import (
     build_densenet121_finetune,
     build_hybrid_model,
     build_linear_head_model,
+    build_mlp_head_model,
     build_resnet18_finetune,
 )
 from metrics_utils import count_trainable_parameters, format_params
@@ -75,20 +76,37 @@ def _accuracy_from_summary(summary_csv: Path, model_key: str) -> float | None:
     return None
 
 
+def _accuracy_std_from_summary(summary_csv: Path, model_key: str) -> float | None:
+    if not summary_csv.exists():
+        return None
+    with summary_csv.open(newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row["model"] == model_key:
+                return float(row["accuracy_std"])
+    return None
+
+
+SETTING_SUMMARY = {
+    "S1": S1_SUMMARY,
+    "S2a": S2_SUMMARY,
+    "S2b": S2B_SUMMARY,
+}
+
+
 def mean_accuracy(model_key: str, setting: str) -> float | None:
-    if setting == "S1":
-        acc = _accuracy_from_summary(S1_SUMMARY, model_key)
-        if acc is not None:
-            return acc
-    if setting == "S2a":
-        acc = _accuracy_from_summary(S2_SUMMARY, model_key)
-        if acc is not None:
-            return acc
-    if setting == "S2b":
-        acc = _accuracy_from_summary(S2B_SUMMARY, model_key)
+    summary = SETTING_SUMMARY.get(setting)
+    if summary is not None:
+        acc = _accuracy_from_summary(summary, model_key)
         if acc is not None:
             return acc
     return PUBLISHED_VAL_ACC.get((model_key, setting))
+
+
+def accuracy_std(model_key: str, setting: str) -> float | None:
+    summary = SETTING_SUMMARY.get(setting)
+    if summary is None:
+        return None
+    return _accuracy_std_from_summary(summary, model_key)
 
 
 def build_rows(device: torch.device) -> list[dict]:
@@ -98,6 +116,9 @@ def build_rows(device: torch.device) -> list[dict]:
         ("Hybrid (16q, d=4)", "hybrid", "S2b", lambda: build_hybrid_model(10, device, n_qubits=16, q_depth=4)),
         ("Linear head (K=4)", "linear_head", "S1", lambda: build_linear_head_model(4, device)),
         ("Linear head (K=10)", "linear_head", "S2a", lambda: build_linear_head_model(10, device)),
+        ("MLP head (tanh, K=4)", "mlp_tanh_head", "S1", lambda: build_mlp_head_model(4, device, n_hidden=4, activation="tanh")),
+        ("MLP head (tanh, K=10)", "mlp_tanh_head", "S2a", lambda: build_mlp_head_model(10, device, n_hidden=10, activation="tanh")),
+        ("MLP head (tanh, K=10)", "mlp_tanh_head", "S2b", lambda: build_mlp_head_model(10, device, n_hidden=16, activation="tanh")),
         ("ResNet18 fine-tune", "resnet18_ft", "S1", lambda: build_resnet18_finetune(4, device)),
         ("ResNet18 fine-tune", "resnet18_ft", "S2a", lambda: build_resnet18_finetune(10, device)),
         ("DenseNet121 fine-tune", "densenet121_ft", "S1", lambda: build_densenet121_finetune(4, device)),
@@ -120,6 +141,7 @@ def build_rows(device: torch.device) -> list[dict]:
         train_seconds = mean_train_seconds(model_key, runs_csv)
 
         val_acc = mean_accuracy(model_key, setting)
+        val_std = accuracy_std(model_key, setting)
 
         rows.append(
             {
@@ -128,7 +150,8 @@ def build_rows(device: torch.device) -> list[dict]:
                 "trainable_params": params,
                 "trainable_params_fmt": format_params(params),
                 "train_seconds_10epochs": f"{train_seconds:.1f}" if train_seconds else "",
-                "val_accuracy": f"{val_acc:.2f}" if val_acc is not None else "",
+                "val_accuracy": f"{val_acc:.3f}" if val_acc is not None else "",
+                "val_accuracy_std": f"{val_std:.3f}" if val_std is not None else "",
             }
         )
     return rows
@@ -146,6 +169,7 @@ def write_csv(rows: list[dict], path: Path) -> None:
                 "trainable_params_fmt",
                 "train_seconds_10epochs",
                 "val_accuracy",
+                "val_accuracy_std",
             ],
         )
         writer.writeheader()
@@ -159,18 +183,24 @@ def write_tex(rows: list[dict], path: Path) -> None:
         "\\vspace{-0.55em}",
         "\\begin{center}",
         "\\footnotesize",
-        "\\captionof{table}{Trainable parameters and 10-epoch training time (validation accuracy reference).}",
+        "\\captionof{table}{Trainable parameters and 10-epoch training time; validation accuracy is mean~$\\pm$~std over three seeds.}",
         "\\label{tab:efficiency}",
         "\\resizebox{\\columnwidth}{!}{%",
-        "\\begin{tabular}{@{}llrrr@{}}",
+        "\\begin{tabular}{@{}llrrc@{}}",
         "\\toprule",
         "\\textbf{Model} & \\textbf{Setting} & \\textbf{Params} & \\textbf{Time (s)} & \\textbf{Val acc.} \\\\",
         "\\midrule",
     ]
     for row in rows:
+        if row["val_accuracy"] and row["val_accuracy_std"]:
+            acc = f"${row['val_accuracy']} \\pm {row['val_accuracy_std']}$"
+        elif row["val_accuracy"]:
+            acc = f"${row['val_accuracy']}$"
+        else:
+            acc = "---"
         lines.append(
             f"{row['model']} & {row['setting']} & {row['trainable_params_fmt']} & "
-            f"{row['train_seconds_10epochs'] or '---'} & {row['val_accuracy'] or '---'} \\\\"
+            f"{row['train_seconds_10epochs'] or '---'} & {acc} \\\\"
         )
     lines.extend(
         [
@@ -178,7 +208,7 @@ def write_tex(rows: list[dict], path: Path) -> None:
             "\\end{tabular}%",
             "}",
             "\\end{center}",
-            "\\vspace{-0.75em}",
+            "\\vspace{0.4em}",
             "",
         ]
     )

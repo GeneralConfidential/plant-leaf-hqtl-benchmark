@@ -52,6 +52,26 @@ Source: `tables/s2b_summary.csv`.
 
 Source: `tables/s2a_summary.csv` (d=4) and `tables/s2a_depth*_summary.csv`.
 
+## Circuit-removal ablation (3 seeds)
+
+The MLP head reuses the dressed head's widths — `Linear(512 → n_qubits)`, a scalar
+nonlinearity, `Linear(n_qubits → K)` — so it is the hybrid with the variational circuit
+removed, carrying 99.2% of the hybrid head's trainable parameters.
+
+| Setting | hybrid (VQC) | mlp_tanh_head | mlp_head (ReLU) | mlp_leaky_head | linear_head |
+|---------|-------------:|--------------:|----------------:|---------------:|------------:|
+| S1 (4q) | 0.994 ± 0.003 | 0.990 ± 0.005 | 0.975 ± 0.011 | 0.951 ± 0.052 | 0.992 ± 0.004 |
+| S2a (10q) | 0.695 ± 0.041 | 0.844 ± 0.019 | 0.821 ± 0.028 | 0.834 ± 0.031 | 0.878 ± 0.019 |
+| S2b (16q) | 0.787 ± 0.031 | 0.864 ± 0.013 | 0.849 ± 0.012 | 0.860 ± 0.019 | 0.878 ± 0.019 |
+| S3 (4q) | 0.901 ± 0.027 | 0.904 ± 0.012 | 0.720 ± 0.201 | 0.743 ± 0.195 | 0.914 ± 0.008 |
+
+`tanh` is the primary matched baseline: it matches the dressing nonlinearity and was
+stable in every setting. The unbounded ReLU/LeakyReLU variants are seed-sensitive at
+hidden width 4 (S1, S3), where a single unlucky initialisation leaves most hidden units
+permanently inactive. Reproduce the diagnosis with `code/diagnose_mlp_head.py`.
+
+Source: the per-setting `*_summary.csv` files listed below.
+
 ## All tables
 
 | File | Description |
@@ -62,6 +82,8 @@ Source: `tables/s2a_summary.csv` (d=4) and `tables/s2a_depth*_summary.csv`.
 | `tables/s2b_runs.csv` / `s2b_summary.csv` | S2b multi-seed |
 | `tables/s2a_depth*_*.csv` | S2a hybrid depth sweep |
 | `tables/efficiency.csv` | Trainable params, wall-clock, val accuracy |
-| `tables/s3_four_tomato_depth4.csv` | S3 single-seed depth-4 reference |
+| `tables/s3_four_tomato_depth4.csv` | S3 four-tomato mean accuracy (3 seeds) |
+| `tables/s3_seeds_runs.csv` | S3 per-seed raw runs |
+| `tables/s3_seeds_summary.csv` | S3 mean ± std summary |
 
 Figures: `../figures/`. Reproduction: `../REPRODUCTION.md`.
