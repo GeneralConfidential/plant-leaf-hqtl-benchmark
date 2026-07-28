@@ -182,6 +182,10 @@ def write_tex(rows: list[dict], path: Path) -> None:
         "% Paste into manuscript/main.tex (Step 3 efficiency table)",
         "\\vspace{-0.55em}",
         "\\begin{center}",
+        # minipage keeps caption and tabular on the same page: as a non-float this
+        # block would otherwise split across a column break.
+        "\\begin{minipage}{\\columnwidth}",
+        "\\centering",
         "\\footnotesize",
         "\\captionof{table}{Trainable parameters and 10-epoch training time; validation accuracy is mean~$\\pm$~std over three seeds.}",
         "\\label{tab:efficiency}",
@@ -207,6 +211,7 @@ def write_tex(rows: list[dict], path: Path) -> None:
             "\\bottomrule",
             "\\end{tabular}%",
             "}",
+            "\\end{minipage}",
             "\\end{center}",
             "\\vspace{0.4em}",
             "",
