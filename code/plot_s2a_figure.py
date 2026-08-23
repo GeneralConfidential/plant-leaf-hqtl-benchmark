@@ -13,9 +13,9 @@ import numpy as np
 from paths import elevation_results_dir, figures_dir, is_private_monorepo, private_root
 
 MODEL_LABELS = {
-    "linear_head": "Frozen linear head",
+    "linear_head": "Linear",
     "hybrid": "HQTL (10q)",
-    "resnet18_ft": "ResNet18 fine-tune",
+    "resnet18_ft": "ResNet18 FT",
 }
 MODEL_COLORS = {
     "linear_head": "#2ca02c",
@@ -58,7 +58,7 @@ def default_outputs() -> list[Path]:
 
 
 def plot_figure(summary: dict[str, dict[str, float]], output: Path) -> None:
-    fig, ax_bar = plt.subplots(figsize=(6.5, 3.8))
+    fig, ax_bar = plt.subplots(figsize=(5.2, 3.0))
 
     labels: list[str] = []
     means: list[float] = []
@@ -75,7 +75,7 @@ def plot_figure(summary: dict[str, dict[str, float]], output: Path) -> None:
     x = np.arange(len(labels))
     ax_bar.bar(x, means, yerr=stds, capsize=4, color=colors, edgecolor="black", linewidth=0.6)
     ax_bar.set_xticks(x)
-    ax_bar.set_xticklabels(labels, rotation=12, ha="right")
+    ax_bar.set_xticklabels(labels, rotation=0, ha="center")
     ax_bar.set_ylim(0.0, 1.05)
     ax_bar.set_ylabel("Validation accuracy (mean ± std, 3 seeds)")
     ax_bar.set_title("S2a: ten tomato classes (10 qubits)")
