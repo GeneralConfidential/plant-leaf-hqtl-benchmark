@@ -80,8 +80,15 @@ python code/run_s2_seeds.py --class-set s3 --models linear_head resnet18_ft dens
 # appending them to --models with the same --runs-csv/--summary-csv, e.g. for S2a:
 python code/run_s2_seeds.py --models mlp_tanh_head mlp_head mlp_leaky_head --seeds 42 123 456
 
-# Dead-unit diagnosis for the narrow ReLU head (explains the S3 ReLU variance)
-python code/diagnose_mlp_head.py --activation relu --n-hidden 4 --seeds 42 123 456
+# Frozen-circuit control (same encoding; variational weights not trained)
+python code/run_s2_seeds.py --models hybrid_frozen_circuit --seeds 42 123 456 \
+  --runs-csv results/tables/s2a_frozen_circuit_runs.csv \
+  --summary-csv results/tables/s2a_frozen_circuit_summary.csv
+
+# From the sdp monorepo: rebuild printed table summaries + S2a effect size
+python scripts/reproduce_tables.py
+python scripts/probe_vqc_grad_variance.py --depths 4 6 8 10 14 16 --batches 4
+
 
 # Efficiency table + figures
 python code/build_efficiency_table.py

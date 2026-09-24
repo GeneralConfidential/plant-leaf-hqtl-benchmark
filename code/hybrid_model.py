@@ -76,12 +76,21 @@ def build_hybrid_model(
     *,
     n_qubits: int = 10,
     q_depth: int = 4,
+    freeze_circuit: bool = False,
 ) -> nn.Module:
+    """Build frozen-ResNet18 + dressed VQC head.
+
+    If freeze_circuit=True, variational weights stay at random init and only the
+    classical dressing layers (pre_net / post_net) train. This is a quantum-structure
+    control: same encoding and entanglement pattern, no circuit learning.
+    """
     weights = torchvision.models.ResNet18_Weights.IMAGENET1K_V1
     model = torchvision.models.resnet18(weights=weights)
     for param in model.parameters():
         param.requires_grad = False
     model.fc = DressedQuantumNet(n_qubits, n_classes, q_depth)
+    if freeze_circuit:
+        model.fc.q_params.requires_grad = False
     return model.to(device)
 
 

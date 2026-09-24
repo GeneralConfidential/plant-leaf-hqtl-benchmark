@@ -75,6 +75,7 @@ def parse_args() -> argparse.Namespace:
             "mlp_leaky_head",
             "resnet18_ft",
             "hybrid",
+            "hybrid_frozen_circuit",
             "densenet121_ft",
             "simple_cnn",
         ],
@@ -114,7 +115,6 @@ def load_existing_runs(path: Path) -> set[tuple[int, str]]:
 
 def append_run(path: Path, row: dict, *, held_out: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    write_header = not path.exists()
     fieldnames = [
         "seed",
         "model",
@@ -141,6 +141,18 @@ def append_run(path: Path, row: dict, *, held_out: bool = False) -> None:
             "f1",
             "train_seconds",
         ]
+    expected_header = ",".join(fieldnames)
+    if path.exists():
+        existing = path.read_text(encoding="utf-8")
+        first = existing.splitlines()[0].strip() if existing.strip() else ""
+        if first and first != expected_header:
+            raise ValueError(
+                f"CSV schema mismatch for {path}: header={first!r}, "
+                f"expected={expected_header!r}. Normalize the file before appending."
+            )
+        write_header = not existing.strip()
+    else:
+        write_header = True
     with path.open("a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         if write_header:
@@ -152,6 +164,14 @@ def build_model(name: str, n_classes: int, device: torch.device, args: argparse.
     if name == "hybrid":
         return build_hybrid_model(
             n_classes, device, n_qubits=args.n_qubits, q_depth=args.q_depth
+        )
+    if name == "hybrid_frozen_circuit":
+        return build_hybrid_model(
+            n_classes,
+            device,
+            n_qubits=args.n_qubits,
+            q_depth=args.q_depth,
+            freeze_circuit=True,
         )
     if name == "linear_head":
         return build_linear_head_model(n_classes, device)
@@ -172,8 +192,9 @@ def build_model(name: str, n_classes: int, device: torch.device, args: argparse.
 
 
 def build_optimizer(model: nn.Module, name: str):
-    if name == "hybrid":
-        return optim.Adam(model.fc.parameters(), lr=HEAD_LR)
+    if name in {"hybrid", "hybrid_frozen_circuit"}:
+        params = [p for p in model.fc.parameters() if p.requires_grad]
+        return optim.Adam(params, lr=HEAD_LR)
     if name == "linear_head":
         return optim.Adam(model.fc.parameters(), lr=HEAD_LR)
     if name in MLP_HEAD_MODELS:
