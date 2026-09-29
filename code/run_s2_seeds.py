@@ -76,6 +76,7 @@ def parse_args() -> argparse.Namespace:
             "resnet18_ft",
             "hybrid",
             "hybrid_frozen_circuit",
+            "hybrid_reupload",
             "densenet121_ft",
             "simple_cnn",
         ],
@@ -173,6 +174,14 @@ def build_model(name: str, n_classes: int, device: torch.device, args: argparse.
             q_depth=args.q_depth,
             freeze_circuit=True,
         )
+    if name == "hybrid_reupload":
+        return build_hybrid_model(
+            n_classes,
+            device,
+            n_qubits=args.n_qubits,
+            q_depth=args.q_depth,
+            ansatz="reupload",
+        )
     if name == "linear_head":
         return build_linear_head_model(n_classes, device)
     if name in MLP_HEAD_MODELS:
@@ -192,7 +201,7 @@ def build_model(name: str, n_classes: int, device: torch.device, args: argparse.
 
 
 def build_optimizer(model: nn.Module, name: str):
-    if name in {"hybrid", "hybrid_frozen_circuit"}:
+    if name in {"hybrid", "hybrid_frozen_circuit", "hybrid_reupload"}:
         params = [p for p in model.fc.parameters() if p.requires_grad]
         return optim.Adam(params, lr=HEAD_LR)
     if name == "linear_head":

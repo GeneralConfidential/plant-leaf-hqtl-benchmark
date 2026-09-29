@@ -9,7 +9,12 @@ import pennylane as qml
 from pennylane import numpy as qnp
 
 
-def _build_quantum_layers(n_qubits: int, q_depth: int):
+ANSATZES = ("standard", "reupload")
+
+
+def _build_quantum_layers(n_qubits: int, q_depth: int, ansatz: str = "standard"):
+    if ansatz not in ANSATZES:
+        raise ValueError(f"unknown ansatz: {ansatz}")
     dev = qml.device("default.qubit", wires=n_qubits)
 
     def h_layer(nqubits: int) -> None:
@@ -30,8 +35,13 @@ def _build_quantum_layers(n_qubits: int, q_depth: int):
     def quantum_net(q_input_features, q_weights_flat):
         q_weights = q_weights_flat.reshape(q_depth, n_qubits)
         h_layer(n_qubits)
-        ry_layer(q_input_features)
+        if ansatz == "standard":
+            ry_layer(q_input_features)
         for k in range(q_depth):
+            # Data re-uploading: re-encode the inputs before every variational layer.
+            # Trainable parameter count is identical to the standard ansatz.
+            if ansatz == "reupload":
+                ry_layer(q_input_features)
             entangling_layer(n_qubits)
             ry_layer(q_weights[k])
         return tuple(qml.expval(qml.PauliZ(i)) for i in range(n_qubits))
@@ -46,11 +56,13 @@ class DressedQuantumNet(nn.Module):
         n_classes: int,
         q_depth: int,
         q_delta: float = 0.01,
+        ansatz: str = "standard",
     ):
         super().__init__()
         self.n_qubits = n_qubits
         self.q_depth = q_depth
-        self.quantum_net = _build_quantum_layers(n_qubits, q_depth)
+        self.ansatz = ansatz
+        self.quantum_net = _build_quantum_layers(n_qubits, q_depth, ansatz)
         self.pre_net = nn.Linear(512, n_qubits)
         self.q_params = nn.Parameter(q_delta * torch.randn(q_depth * n_qubits))
         self.post_net = nn.Linear(n_qubits, n_classes)
@@ -77,18 +89,22 @@ def build_hybrid_model(
     n_qubits: int = 10,
     q_depth: int = 4,
     freeze_circuit: bool = False,
+    ansatz: str = "standard",
 ) -> nn.Module:
     """Build frozen-ResNet18 + dressed VQC head.
 
     If freeze_circuit=True, variational weights stay at random init and only the
     classical dressing layers (pre_net / post_net) train. This is a quantum-structure
     control: same encoding and entanglement pattern, no circuit learning.
+
+    ansatz="reupload" re-applies the angle embedding before every variational layer
+    (data re-uploading) with the same trainable parameter count as "standard".
     """
     weights = torchvision.models.ResNet18_Weights.IMAGENET1K_V1
     model = torchvision.models.resnet18(weights=weights)
     for param in model.parameters():
         param.requires_grad = False
-    model.fc = DressedQuantumNet(n_qubits, n_classes, q_depth)
+    model.fc = DressedQuantumNet(n_qubits, n_classes, q_depth, ansatz=ansatz)
     if freeze_circuit:
         model.fc.q_params.requires_grad = False
     return model.to(device)
