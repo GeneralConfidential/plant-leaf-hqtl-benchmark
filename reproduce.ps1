@@ -1,7 +1,7 @@
 # Reproduction entrypoints (Windows). Run from paper-release/ root.
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("smoke", "tables", "figures", "manifest", "check", "s2a", "s2b")]
+    [ValidateSet("smoke", "tables", "stats", "figures", "manifest", "check", "s2a", "s2b")]
     [string]$Target = "smoke"
 )
 
@@ -11,7 +11,14 @@ Set-Location $PSScriptRoot
 switch ($Target) {
     "smoke"    { python code/run_smoke_test.py }
     "tables"   { python code/build_efficiency_table.py }
-    "figures"  { python code/plot_s2a_figure.py }
+    "stats"    { python code/reproduce_tables.py }
+    "figures"  {
+        python code/plot_s2a_figure.py
+        python code/plot_s2a_depth_figure.py
+        python code/plot_s2a_epoch_curves.py
+        python code/plot_head_lr_sweep.py
+        python code/plot_circuit_grad_variance.py
+    }
     "manifest" { python code/generate_manifest.py }
     "check"    { python code/check_artifacts.py }
     "s2a"      {

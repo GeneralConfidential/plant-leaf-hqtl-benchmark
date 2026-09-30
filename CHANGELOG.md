@@ -1,6 +1,45 @@
 # Changelog
 
-## v1.0.3 — unreleased
+## v1.1.0 — 2026-09-30
+
+Artifact release matching the submitted manuscript. v1.0.3 was never tagged; its
+changes are included here.
+
+### Added
+- Held-out test protocol (`run_s2_seeds.py --held-out`): fixed 20% stratified test
+  partition (split seed 42) for S1, S2a, S3: `s{1,2a,3}_heldout_runs.csv` / `*_summary.csv`
+- Hybrid head learning-rate sweep (`run_s2a_lr_sweep.py`): `s{1,2a,3}_lr_sweep_*.csv`
+- S2a 50-epoch continuation for hybrid, linear, and tanh heads: `s2a_long_epochs_*.csv`
+  and per-epoch curves `s2a_epoch_curves.csv`, `s2a_long_epochs_curves.csv`
+- Frozen random-circuit control (`hybrid_frozen_circuit`): `s2a_frozen_circuit_*.csv`
+- Parameter-matched data re-uploading ansatz (`hybrid_reupload`,
+  `build_hybrid_model(..., ansatz="reupload")`) at d=4 and d=8: `s2a_reupload_d{4,8}_*.csv`
+- Five-seed S2a confirmation (seeds 789, 1024 for hybrid, linear, tanh) in `s2a_runs.csv`
+- `probe_circuit_grad_variance.py`: variance of circuit-parameter gradients over random
+  initialisations (depth and qubit sweeps, training and uniform init):
+  `s2a_circuit_grad_variance.csv`
+- `reproduce_tables.py`: recomputes every paper summary, the five-seed Welch tests, and
+  Cohen's d from the seed-level CSVs (numpy only; scipy for p-values)
+- Figure generators that read only released CSVs: `plot_s2a_epoch_curves.py`,
+  `plot_head_lr_sweep.py`, `plot_circuit_grad_variance.py`
+- `.zenodo.json` archive metadata; `make stats` / `reproduce.ps1 stats`
+
+### Fixed
+- `build_efficiency_table.py` averaged training time over every seed in `s2a_runs.csv`;
+  it now uses the three main seeds, matching the paper's efficiency table
+
+### Headline results
+- Five seeds, S2a: matched tanh head beats the d=4 hybrid by 12.1 pp
+  (Welch p = 0.004, Cohen's d = 3.35); frozen linear head by 15.7 pp (p = 0.001, d = 4.34)
+- Held-out test (S2a): linear 0.869 ± 0.004, tanh 0.839 ± 0.008, hybrid 0.706 ± 0.084
+- 50 epochs (S2a): hybrid 0.740 ± 0.028 vs linear 0.888 ± 0.013 and tanh 0.859 ± 0.022
+- Frozen random circuit 0.676 ± 0.039; re-uploading d=4 0.690 ± 0.068, d=8 0.544 ± 0.009
+- Circuit-parameter gradient variance at init (200 inits, S2a features): under the
+  training init ($0.01\,\mathcal{N}(0,1)$) mean $\mathrm{Var}[\partial L/\partial\theta]$
+  stays $\sim 3\times 10^{-4}$ from $d{=}4$ to $d{=}16$ at 10 qubits; under uniform
+  $[0,2\pi)$ it falls $\sim 9\times$ over the same depths
+
+## v1.0.3 — never tagged (included in v1.1.0)
 
 ### Added
 - S3 multi-seed (all 5 models × seeds 42/123/456): `s3_seeds_runs.csv`, `s3_seeds_summary.csv`

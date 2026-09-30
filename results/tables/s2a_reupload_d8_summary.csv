@@ -1,0 +1,2 @@
+model,accuracy_mean,accuracy_std,f1_mean,f1_std,train_seconds_mean
+hybrid_reupload,0.5438,0.0093,0.4853,0.0232,8545.1

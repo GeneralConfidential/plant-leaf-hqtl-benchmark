@@ -23,9 +23,11 @@ Hardware: NVIDIA RTX 3050 Ti, Intel i7-12700H. Hybrid S2a ~56 min/seed; S2b ~7.7
 
 ## GitHub release
 
-1. Commit and push `paper-release` to `clean-main` (or `main`)
-2. Tag `v1.0.0` with release notes from `CHANGELOG.md`
-3. Enable Zenodo-GitHub integration → publish deposition
+1. Enable the Zenodo-GitHub integration for this repo first (zenodo.org → GitHub →
+   toggle on); Zenodo only archives releases published after the toggle
+2. Commit and push `paper-release` to `main`
+3. Publish a GitHub release for the new tag with notes from `CHANGELOG.md`
+   (Zenodo reads `.zenodo.json` and mints the DOI)
 4. Add DOI to `CITATION.cff`, `README.md`, `manuscript/references.bib`
 
 ## Post-Zenodo

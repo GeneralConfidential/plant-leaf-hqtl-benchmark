@@ -34,6 +34,8 @@ S2_RUNS = elevation_results_dir() / "s2a_runs.csv"
 S2_SUMMARY = elevation_results_dir() / "s2a_summary.csv"
 S2B_RUNS = elevation_results_dir() / "s2b_runs.csv"
 S2B_SUMMARY = elevation_results_dir() / "s2b_summary.csv"
+# s2a_runs.csv also holds five-seed confirmation rows (789, 1024); the table uses these three.
+MAIN_SEEDS = frozenset({"42", "123", "456"})
 
 # Fallback published accuracies if summary CSVs are missing
 PUBLISHED_VAL_ACC = {
@@ -60,7 +62,7 @@ def mean_train_seconds(model_name: str, runs_csv: Path | None) -> float | None:
     latest_by_seed: dict[str, float] = {}
     with runs_csv.open(newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
-            if row["model"] == model_name:
+            if row["model"] == model_name and row["seed"] in MAIN_SEEDS:
                 latest_by_seed[row["seed"]] = float(row["train_seconds"])
     times = list(latest_by_seed.values())
     return sum(times) / len(times) if times else None

@@ -13,9 +13,12 @@ Code and experiment outputs for hybrid quantum-classical transfer learning (HQTL
 |-------|---------------|---------------|
 | ResNet18 fine-tune | **0.938 ± 0.017** | ~250 s |
 | Frozen linear head | **0.878 ± 0.019** | ~193 s |
-| HQTL hybrid (VQC head) | 0.695 ± 0.041 | ~3384 s |
+| Matched tanh head (VQC removed) | 0.844 ± 0.019 | ~169 s |
+| HQTL hybrid (VQC head, d=4) | 0.695 ± 0.041 | ~3384 s |
 
-On the same frozen ResNet18 embeddings, a linear head outperforms the VQC head by **~18 pp** at **~17× lower** training time. See `results/tables/s2a_summary.csv`.
+On the same frozen ResNet18 embeddings, a linear head outperforms the VQC head by **~18 pp** at **~17× lower** training time, and simply deleting the circuit (same widths, 99.2% of the parameters) gains ~15 pp. See `results/tables/s2a_summary.csv`.
+
+Controls on S2a (see `ARTIFACTS.md`): the gap holds over five seeds (tanh vs hybrid Welch p = 0.004, Cohen's d = 3.35), on a held-out test partition, and after 50 epochs; a frozen random circuit (0.676) and a parameter-matched data re-uploading circuit (0.690 at d=4) perform no better than the trained d=4 circuit. `python code/reproduce_tables.py` recomputes all of these from the CSVs.
 
 ## Qubit scaling (S2b: 16 qubits, 3 seeds — hybrid only)
 
@@ -54,7 +57,8 @@ python code/run_smoke_test.py
 
 ```bash
 make smoke          # or: .\reproduce.ps1 smoke
-make figures        # S2a accuracy/cost plot
+make stats          # paper summaries, Welch tests, effect sizes (from CSVs, no GPU)
+make figures        # all data figures, from CSVs
 make tables         # efficiency.csv
 make check          # verify results/manifest.json
 ```
@@ -78,9 +82,8 @@ make s2b
   title        = {Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification: Code and Reproduction Artifacts},
   author       = {Gautam, Raag and B, Shreyas M},
   year         = {2026},
-  version      = {1.0.1},
-  url          = {https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark},
-  note         = {Add Zenodo DOI after release}
+  version      = {1.1.0},
+  url          = {https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark}
 }
 ```
 

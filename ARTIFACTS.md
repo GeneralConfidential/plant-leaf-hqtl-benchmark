@@ -7,8 +7,9 @@ Maps each paper artifact to its source file and generator.
 | Table: S1 multi-seed | `results/tables/s1_seeds_summary.csv` | `run_s2_seeds.py --class-set s1` |
 | Table: S1 per-seed | `results/tables/s1_seeds_runs.csv` | `run_s2_seeds.py --class-set s1` |
 | Table: S1 legacy point estimates | `results/tables/s1_four_unrelated.csv` | Original / `run_s1_linear_head.py` |
-| Table: S2a summary | `results/tables/s2a_summary.csv` | `run_s2_seeds.py` |
-| Table: S2a per-seed (`tab:s2a_per_seed`) | `results/tables/s2a_runs.csv` | `run_s2_seeds.py` |
+| Table: S2a summary (3 main seeds) | `results/tables/s2a_summary.csv` | `run_s2_seeds.py` |
+| Table: S2a per-seed (`tab:s2a_per_seed`) | `results/tables/s2a_runs.csv` (seeds 42/123/456, plus 789/1024 for hybrid, linear, tanh) | `run_s2_seeds.py` |
+| Five-seed S2a confirmation (Welch p, Cohen's d) | `results/tables/s2a_runs.csv` | `reproduce_tables.py` (printed) |
 | Table: S2b summary (`tab:s2b_per_seed`) | `results/tables/s2b_summary.csv` | `run_s2_seeds.py --n-qubits 16` |
 | Table: S2b per-seed | `results/tables/s2b_runs.csv` | `run_s2_seeds.py --n-qubits 16` |
 | Table: S2a depth summaries | `results/tables/s2a_depth{6,8,10,12,14,16}_summary.csv` | `run_s2_seeds.py --q-depth …` |
@@ -17,10 +18,24 @@ Maps each paper artifact to its source file and generator.
 | Table: circuit-removal ablation (`tab:removal`) | the four `*_summary.csv` files above (rows `mlp_tanh_head`, `mlp_head`, `mlp_leaky_head`) | `run_s2_seeds.py --models mlp_tanh_head …` |
 | Dead-unit diagnosis (S3 ReLU instability) | console output | `diagnose_mlp_head.py` |
 | Table: efficiency (`tab:efficiency`) | `results/tables/efficiency.csv` | `build_efficiency_table.py` |
+| Table: held-out test (`tab:heldout`) | `results/tables/s{1,2a,3}_heldout_runs.csv`, `*_heldout_summary.csv` | `run_s2_seeds.py --held-out --split-seed 42 --test-ratio 0.2` |
+| Table: 50-epoch S2a (`tab:longepochs`) | `results/tables/s2a_long_epochs_runs.csv`, `s2a_long_epochs_summary.csv` | `run_s2_seeds.py --epochs 50 --models hybrid linear_head mlp_tanh_head` |
+| Frozen random-circuit control | `results/tables/s2a_frozen_circuit_runs.csv`, `s2a_frozen_circuit_summary.csv` | `run_s2_seeds.py --models hybrid_frozen_circuit` |
+| Data re-uploading control (d=4, d=8) | `results/tables/s2a_reupload_d{4,8}_runs.csv`, `*_summary.csv` | `run_s2_seeds.py --models hybrid_reupload --q-depth {4,8}` |
+| Circuit-parameter gradient variance at init | `results/tables/s2a_circuit_grad_variance.csv` | `probe_circuit_grad_variance.py` |
+| Hybrid head learning-rate sweeps | `results/tables/s{1,2a,3}_lr_sweep_runs.csv`, `*_lr_sweep_summary.csv` | `run_s2a_lr_sweep.py --class-set all` |
+| All printed summary statistics | seed-level CSVs above | `reproduce_tables.py` |
 | Figure: architecture (`fig:arch`) | TikZ in manuscript | — |
 | Figure: S1 predictions (`fig:predictions`) | `figures/sample_predictions.png` | `demo_hybrid.ipynb` |
 | Figure: S2a depth ablation (`fig:depth`) | `figures/s2a_depth_ablation.png` | `plot_s2a_depth_figure.py` |
 | Figure: S2a accuracy/cost (`fig:s2a_pareto`) | `figures/s2a_accuracy_pareto.png` | `plot_s2a_figure.py` |
+| Figure: S2a epoch curves (`fig:epochs`) | `figures/s2a_epoch_curves.png` from `results/tables/s2a_epoch_curves.csv`, `s2a_long_epochs_curves.csv` | `plot_s2a_epoch_curves.py` |
+| Figure: head LR sensitivity (`fig:head_lr_sensitivity`) | `figures/head_lr_sweep_sensitivity.png` | `plot_head_lr_sweep.py` |
+| Figure: circuit gradient variance | `figures/s2a_circuit_grad_variance.png` | `plot_circuit_grad_variance.py` |
+
+S2a tables in the paper use the three main seeds (42, 123, 456). `s2a_runs.csv` also
+carries seeds 789 and 1024 for the hybrid, linear, and matched `tanh` heads; scripts that
+build the three-seed tables and figures filter to the main seeds.
 
 ## Verify integrity
 

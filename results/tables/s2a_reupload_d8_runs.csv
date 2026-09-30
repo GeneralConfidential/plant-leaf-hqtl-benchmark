@@ -1,0 +1,4 @@
+seed,model,epochs,accuracy,precision,recall,f1,train_seconds
+42,hybrid_reupload,10,0.5509,0.5845,0.5489,0.5107,8525.3
+123,hybrid_reupload,10,0.5333,0.5811,0.5301,0.4653,8553.7
+456,hybrid_reupload,10,0.5472,0.5680,0.5449,0.4800,8556.2

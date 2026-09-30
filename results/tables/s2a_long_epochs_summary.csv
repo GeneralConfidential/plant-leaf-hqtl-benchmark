@@ -1,0 +1,4 @@
+model,accuracy_mean,accuracy_std,f1_mean,f1_std,train_seconds_mean
+hybrid,0.7396,0.0284,0.7220,0.0385,15946.5
+linear_head,0.8881,0.0130,0.8875,0.0139,890.5
+mlp_tanh_head,0.8591,0.0220,0.8576,0.0234,735.5

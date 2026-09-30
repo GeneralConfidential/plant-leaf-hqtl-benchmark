@@ -1,0 +1,2 @@
+model,accuracy_mean,accuracy_std,f1_mean,f1_std,train_seconds_mean
+hybrid_frozen_circuit,0.6759,0.0389,0.6374,0.0526,1292.4

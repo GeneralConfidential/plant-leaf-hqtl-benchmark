@@ -1,0 +1,4 @@
+seed,model,epochs,accuracy,precision,recall,f1,train_seconds
+42,hybrid_frozen_circuit,10,0.6528,0.6297,0.6539,0.6000,1309.3
+123,hybrid_frozen_circuit,10,0.6541,0.6627,0.6559,0.6147,1277.8
+456,hybrid_frozen_circuit,10,0.7208,0.7296,0.7222,0.6976,1290.0
