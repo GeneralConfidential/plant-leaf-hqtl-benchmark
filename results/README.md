@@ -1,6 +1,6 @@
 # Results
 
-Validation metrics (CSV) and figure index. See `ARTIFACTS.md` for paper mapping.
+Validation metrics (CSV) and figure index. See `TABLES.md` for the paper file map.
 
 ## S1 multi-seed (4 unrelated classes, 4 qubits)
 

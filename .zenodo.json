@@ -2,7 +2,7 @@
   "title": "Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification: Code and Reproduction Artifacts",
   "upload_type": "software",
   "version": "1.1.0",
-  "description": "Code, seed-level validation and held-out test metrics, and figure generators for an empirical study of hybrid quantum-classical transfer learning (frozen ImageNet ResNet18 with a PennyLane dressed variational-circuit head) on PlantVillage-derived leaf-image subsets. Includes classical baselines, a parameter-matched frozen linear head, a matched-width tanh head with the circuit removed, frozen-random-circuit and data re-uploading controls, a multi-seed circuit-depth ablation, a 50-epoch continuation, head learning-rate sweeps, and circuit-parameter gradient-variance diagnostics. PlantVillage images are not redistributed.",
+  "description": "Code and CSV metrics for hybrid quantum-classical transfer learning (frozen ImageNet ResNet18 with a PennyLane dressed VQC head) on PlantVillage leaf subsets, plus classical and head-matched baselines. PlantVillage images are not redistributed.",
   "creators": [
     {
       "name": "Gautam, Raag",

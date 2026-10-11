@@ -1,36 +1,27 @@
 # plant-leaf-hqtl-benchmark
 
 [![CI](https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark/actions/workflows/ci.yml)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-Code and experiment outputs for hybrid quantum-classical transfer learning (HQTL) on PlantVillage-derived leaf subsets (SDP, VIT-AP).
+Code and CSV results for hybrid quantum-classical transfer learning (HQTL) on PlantVillage leaf subsets. Raag Gautam and Shreyas M. B., VIT-AP.
 
-**Paper:** *Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification: An Empirical Performance and Limitations Study* (manuscript maintained separately).
+Paper (separate repo / Overleaf): *Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification: An Empirical Performance and Limitations Study*.
 
-## Headline results (S2a: 10 tomato classes, 10 qubits, 3 seeds)
+Frozen ImageNet ResNet18 embeddings, PennyLane dressed VQC head, compared with a frozen linear head and a matched-width head with the circuit replaced by `tanh`.
 
-| Model | Val. accuracy | 10-epoch time |
-|-------|---------------|---------------|
-| ResNet18 fine-tune | **0.938 ± 0.017** | ~250 s |
-| Frozen linear head | **0.878 ± 0.019** | ~193 s |
-| Matched tanh head (VQC removed) | 0.844 ± 0.019 | ~169 s |
-| HQTL hybrid (VQC head, d=4) | 0.695 ± 0.041 | ~3384 s |
+## Results (S2a: 10 tomato classes, 10 qubits, 3 seeds)
 
-On the same frozen ResNet18 embeddings, a linear head outperforms the VQC head by **~18 pp** at **~17× lower** training time, and simply deleting the circuit (same widths, 99.2% of the parameters) gains ~15 pp. See `results/tables/s2a_summary.csv`.
+| Model | Val. accuracy | ~10-epoch time |
+|-------|---------------|----------------|
+| ResNet18 fine-tune | 0.938 ± 0.017 | ~250 s |
+| Frozen linear head | 0.878 ± 0.019 | ~193 s |
+| Matched tanh (no VQC) | 0.844 ± 0.019 | ~169 s |
+| Hybrid VQC head (d=4) | 0.695 ± 0.041 | ~3384 s |
 
-Controls on S2a (see `ARTIFACTS.md`): the gap holds over five seeds (tanh vs hybrid Welch p = 0.004, Cohen's d = 3.35), on a held-out test partition, and after 50 epochs; a frozen random circuit (0.676) and a parameter-matched data re-uploading circuit (0.690 at d=4) perform no better than the trained d=4 circuit. `python code/reproduce_tables.py` recomputes all of these from the CSVs.
+On the same embeddings the linear and tanh heads beat the hybrid and train much faster. Start with `results/tables/s2a_summary.csv`. Other settings and controls are listed in `TABLES.md`.
 
-## Qubit scaling (S2b: 16 qubits, 3 seeds — hybrid only)
+S2b (16 qubits, hybrid): 0.787 ± 0.031 — see `results/tables/s2b_summary.csv`.
 
-| Model | Val. accuracy | 10-epoch time |
-|-------|---------------|---------------|
-| HQTL hybrid (16 qubits) | **0.787 ± 0.031** | ~27 637 s |
-
-Raising qubits from 10 to 16 improves hybrid mean accuracy by **~9 pp** but remains below the frozen linear head and classical fine-tuning. See `results/tables/s2b_summary.csv`.
-
-## Quick start
-
-**CPU smoke test (no data download, &lt; 5 min):**
+## Quick check (CPU, no PlantVillage)
 
 ```bash
 git clone https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark.git
@@ -39,52 +30,34 @@ pip install -r code/requirements-ci.txt
 python code/run_smoke_test.py
 ```
 
-**Full hybrid training:** see `REPRODUCTION.md` (requires PlantVillage download + GPU recommended).
-
-## Repository layout
-
-| Path | Description |
-|------|-------------|
-| `code/` | Training scripts, hybrid model, notebooks |
-| `results/tables/` | Validation metrics (CSV) |
-| `figures/` | Paper figures |
-| `REPRODUCTION.md` | Splits, hyperparameters, exact commands |
-| `ARTIFACTS.md` | Paper table → file mapping |
-| `MODEL_CARD.md` | Scope, limits, intended use |
-| `CITATION.cff` | Machine-readable citation metadata |
-
-## Reproduce key artifacts
+Full training needs PlantVillage on disk and preferably a GPU. See `REPRODUCTION.md`.
 
 ```bash
-make smoke          # or: .\reproduce.ps1 smoke
-make stats          # paper summaries, Welch tests, effect sizes (from CSVs, no GPU)
-make figures        # all data figures, from CSVs
-make tables         # efficiency.csv
-make check          # verify results/manifest.json
+make smoke    # same as the smoke test above
+make stats    # recompute table summaries from CSVs
+make figures  # rebuild plots from CSVs
+make check    # verify results/manifest.json
 ```
 
-Full S2a multi-seed training (GPU, hours):
+## Files
 
-```bash
-make s2a
-```
-
-S2b hybrid only (16 qubits, ~7.7 h/seed):
-
-```bash
-make s2b
-```
+- `code/` — training and plotting scripts
+- `results/tables/` — metrics CSVs
+- `figures/` — paper plots
+- `REPRODUCTION.md` — data layout, hyperparameters, commands
+- `TABLES.md` — which CSV/figure matches which paper table
+- `LIMITATIONS.md` — scope and caveats
 
 ## Citation
 
 ```bibtex
 @software{gautam2026hqtl_plant,
-  title        = {Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification: Code and Reproduction Artifacts},
-  author       = {Gautam, Raag and B, Shreyas M},
-  year         = {2026},
-  version      = {1.1.0},
-  url          = {https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark}
+  title   = {Hybrid Quantum-Classical Transfer Learning for Plant Leaf Classification: Code and Reproduction Artifacts},
+  author  = {Gautam, Raag and B, Shreyas M},
+  year    = {2026},
+  version = {1.1.0},
+  url     = {https://github.com/GeneralConfidential/plant-leaf-hqtl-benchmark}
 }
 ```
 
-Raag Gautam, Shreyas M B — VIT-AP. MIT license (see `LICENSE`).
+MIT license — see `LICENSE`.

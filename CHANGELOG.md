@@ -2,8 +2,8 @@
 
 ## v1.1.0 — 2026-09-30
 
-Artifact release matching the submitted manuscript. v1.0.3 was never tagged; its
-changes are included here.
+Release matching the submitted manuscript. v1.0.3 was never tagged; its changes
+are included here.
 
 ### Added
 - Held-out test protocol (`run_s2_seeds.py --held-out`): fixed 20% stratified test
@@ -28,16 +28,11 @@ changes are included here.
 - `build_efficiency_table.py` averaged training time over every seed in `s2a_runs.csv`;
   it now uses the three main seeds, matching the paper's efficiency table
 
-### Headline results
-- Five seeds, S2a: matched tanh head beats the d=4 hybrid by 12.1 pp
-  (Welch p = 0.004, Cohen's d = 3.35); frozen linear head by 15.7 pp (p = 0.001, d = 4.34)
+### Results
+- Five seeds, S2a: tanh vs hybrid +12.1 pp (Welch p = 0.004, d = 3.35); linear vs hybrid +15.7 pp (p = 0.001, d = 4.34)
 - Held-out test (S2a): linear 0.869 ± 0.004, tanh 0.839 ± 0.008, hybrid 0.706 ± 0.084
 - 50 epochs (S2a): hybrid 0.740 ± 0.028 vs linear 0.888 ± 0.013 and tanh 0.859 ± 0.022
 - Frozen random circuit 0.676 ± 0.039; re-uploading d=4 0.690 ± 0.068, d=8 0.544 ± 0.009
-- Circuit-parameter gradient variance at init (200 inits, S2a features): under the
-  training init ($0.01\,\mathcal{N}(0,1)$) mean $\mathrm{Var}[\partial L/\partial\theta]$
-  stays $\sim 3\times 10^{-4}$ from $d{=}4$ to $d{=}16$ at 10 qubits; under uniform
-  $[0,2\pi)$ it falls $\sim 9\times$ over the same depths
 
 ## v1.0.3 — never tagged (included in v1.1.0)
 
@@ -55,13 +50,10 @@ changes are included here.
 - Efficiency table reports validation accuracy as mean ± std and includes the matched
   nonlinear head rows
 
-### Headline results (3 seeds)
-- Removing the circuit at matched width and parameter count (99.2% of hybrid head params)
-  **improves** accuracy on both fine-grained settings: S2a 0.695 ± 0.041 → **0.844 ± 0.019**
-  (+14.9 pp), S2b 0.787 ± 0.031 → **0.864 ± 0.013** (+7.6 pp), with non-overlapping std
-- S1 and S3 are unchanged within noise (0.994 → 0.990; 0.901 → 0.904)
-- Narrow unbounded activations are seed-sensitive: S3 ReLU **0.720 ± 0.201**,
-  LeakyReLU **0.743 ± 0.195**; `tanh` was stable in every setting
+### Results (3 seeds)
+- Circuit removal (matched width): S2a 0.695 ± 0.041 → 0.844 ± 0.019; S2b 0.787 ± 0.031 → 0.864 ± 0.013
+- S1 and S3 unchanged within noise (0.994 → 0.990; 0.901 → 0.904)
+- Narrow ReLU / LeakyReLU heads are seed-sensitive on S3; `tanh` was stable
 
 ## v1.0.2 — 2026-07-23
 
@@ -76,11 +68,11 @@ changes are included here.
 - Efficiency table now reads multi-seed S1/S2a/S2b summaries
 - Paper depth figure replaced with multi-seed S2a ablation (was single-seed S3 notebook plot)
 
-### Headline results (3 seeds unless noted)
-- S1 hybrid: **0.994 ± 0.003**; DenseNet121: **0.998 ± 0.002**
-- S2a DenseNet121: **0.972 ± 0.007**; Simple CNN: **0.774 ± 0.036**
-- S2b DenseNet121: **0.961 ± 0.008**; ResNet18: **0.948 ± 0.015**; linear: **0.878 ± 0.019**
-- S2a depth peaks: d=8 **0.832 ± 0.011**, d=16 **0.842 ± 0.024**
+### Results (3 seeds unless noted)
+- S1 hybrid: 0.994 ± 0.003; DenseNet121: 0.998 ± 0.002
+- S2a DenseNet121: 0.972 ± 0.007; Simple CNN: 0.774 ± 0.036
+- S2b DenseNet121: 0.961 ± 0.008; ResNet18: 0.948 ± 0.015; linear: 0.878 ± 0.019
+- S2a depth peaks: d=8 0.832 ± 0.011, d=16 0.842 ± 0.024
 
 ## v1.0.1 — 2026-07-08
 

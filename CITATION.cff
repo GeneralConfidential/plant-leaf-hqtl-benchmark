@@ -21,10 +21,6 @@ keywords:
   - pytorch
   - plantvillage
 abstract: >-
-  Code, notebooks, and validation-metric tables for an empirical study of
-  hybrid quantum-classical transfer learning (frozen ResNet18 + PennyLane VQC
-  head) on PlantVillage-derived leaf-image subsets, with classical baselines
-  and multi-seed results on four-class and ten-class tomato classification
-  (10 and 16 qubits), including a multi-seed circuit-depth ablation,
-  circuit-removal, frozen-circuit, and data re-uploading controls, held-out
-  test evaluation, and circuit-parameter gradient-variance diagnostics.
+  Code and metric tables for hybrid quantum-classical transfer learning
+  (frozen ResNet18 + PennyLane VQC head) on PlantVillage leaf subsets, with
+  classical and head-matched baselines on four- and ten-class settings.

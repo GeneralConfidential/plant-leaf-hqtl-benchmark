@@ -15,7 +15,7 @@ pip install -r code/requirements-ci.txt
 python code/run_smoke_test.py
 ```
 
-Uses a synthetic 4-class mini-dataset; checks hybrid + linear forward/backward and metrics.
+Synthetic 4-class mini-dataset; checks hybrid + linear forward/backward and metrics.
 
 ## Experiments
 
@@ -47,7 +47,7 @@ code/data/s2_tomato/
 
 Download from [PlantVillage (Mendeley)](https://data.mendeley.com/datasets/tywbtsjrjv/1).
 
-## Exact commands (v1.1.0)
+## Main training commands (v1.1.0)
 
 From repo root, with GPU and data in place:
 
@@ -75,42 +75,39 @@ python code/run_s2_seeds.py --models hybrid --n-qubits 10 --q-depth 8 --seeds 42
 python code/run_s2_seeds.py --class-set s3 --models linear_head resnet18_ft densenet121_ft simple_cnn hybrid \
   --n-qubits 4 --seeds 42 123 456 \
   --runs-csv results/tables/s3_seeds_runs.csv --summary-csv results/tables/s3_seeds_summary.csv
+```
 
-# Circuit-removal ablation: add the matched nonlinear heads to any setting above by
-# appending them to --models with the same --runs-csv/--summary-csv, e.g. for S2a:
+## Extra controls and plots
+
+```bash
+# Circuit-removal (matched nonlinear heads)
 python code/run_s2_seeds.py --models mlp_tanh_head mlp_head mlp_leaky_head --seeds 42 123 456
 
-# Frozen-circuit control (same encoding; variational weights not trained)
+# Frozen-circuit control
 python code/run_s2_seeds.py --models hybrid_frozen_circuit --seeds 42 123 456 \
   --runs-csv results/tables/s2a_frozen_circuit_runs.csv \
   --summary-csv results/tables/s2a_frozen_circuit_summary.csv
 
-# Five-seed S2a confirmation (adds seeds to s2a_runs.csv)
+# Extra seeds for S2a hybrid / tanh / linear
 python code/run_s2_seeds.py --models hybrid mlp_tanh_head linear_head --seeds 789 1024 --skip-existing
 
-# Data re-uploading control (same parameter count; example: d=8)
+# Data re-uploading (example: d=8)
 python code/run_s2_seeds.py --models hybrid_reupload --q-depth 8 --seeds 42 123 456 \
   --runs-csv results/tables/s2a_reupload_d8_runs.csv --summary-csv results/tables/s2a_reupload_d8_summary.csv
 
-# 50-epoch S2a continuation
+# 50-epoch S2a
 python code/run_s2_seeds.py --epochs 50 --models hybrid linear_head mlp_tanh_head --seeds 42 123 456 \
   --runs-csv results/tables/s2a_long_epochs_runs.csv --summary-csv results/tables/s2a_long_epochs_summary.csv
 
-# Held-out test partition (repeat with --class-set s1 / s3 and --n-qubits 4)
+# Held-out test (repeat with --class-set s1 / s3 and --n-qubits 4)
 python code/run_s2_seeds.py --held-out --split-seed 42 --test-ratio 0.2 \
   --models linear_head resnet18_ft densenet121_ft simple_cnn hybrid mlp_tanh_head --seeds 42 123 456 \
   --runs-csv results/tables/s2a_heldout_runs.csv --summary-csv results/tables/s2a_heldout_summary.csv
 
-# Hybrid head learning-rate sweep (S1, S2a, S3)
 python code/run_s2a_lr_sweep.py --class-set all
-
-# Circuit-parameter gradient variance at initialisation (200 inits; depth and qubit sweeps)
 python code/probe_circuit_grad_variance.py --inits 200
-
-# Printed summaries, five-seed Welch tests, and effect sizes from the CSVs (no GPU)
 python code/reproduce_tables.py
 
-# Efficiency table + figures (no GPU)
 python code/build_efficiency_table.py
 python code/plot_s2a_figure.py
 python code/plot_s2a_depth_figure.py
@@ -118,7 +115,6 @@ python code/plot_s2a_epoch_curves.py
 python code/plot_head_lr_sweep.py
 python code/plot_circuit_grad_variance.py
 
-# Manifest for audit
 python code/generate_manifest.py
 python code/check_artifacts.py
 ```
@@ -134,10 +130,10 @@ From the private `sdp` monorepo, use `uv run python paper-release/code/...` with
 
 ## Hardware we used
 
-RTX 3050 Ti, i7-12700H. Python 3.12, PyTorch 2.6.0 (CUDA 12.4), torchvision 0.21.0, PennyLane 0.45.1 `default.qubit` simulator (pinned in `code/requirements.txt`). Hybrid S2a (d=4) ~56 min/seed; S2b ~7.7 h/seed; S2a d=16 ~2.9 h/seed.
+RTX 3050 Ti, i7-12700H. Python 3.12, PyTorch 2.6.0 (CUDA 12.4), torchvision 0.21.0, PennyLane 0.45.1 `default.qubit` (pinned in `code/requirements.txt`). Hybrid S2a (d=4) ~56 min/seed; S2b ~7.7 h/seed; S2a d=16 ~2.9 h/seed.
 
 ## Precomputed outputs
 
 Metrics: `results/tables/*.csv`  
 Figures: `figures/`  
-Integrity: `results/manifest.json`
+Checksums: `results/manifest.json`
